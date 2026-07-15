@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard - MediCare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { background: #f0f4f8; }
+        .patient-layout { display: flex; min-height: 100vh; }
+        .patient-sidebar { width: 240px; min-width: 240px; background: var(--dark); position: fixed; top:0; bottom:0; left:0; overflow-y:auto; z-index:100; }
+        .patient-sidebar .sidebar-brand { padding:20px; border-bottom:1px solid rgba(255,255,255,.08); display:flex; align-items:center; gap:10px; text-decoration:none; }
+        .patient-sidebar .sidebar-brand .brand-icon { width:36px; height:36px; background:linear-gradient(135deg,var(--primary),var(--secondary)); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; }
+        .patient-sidebar .sidebar-brand h2 { font-family:'Playfair Display',serif; font-size:15px; color:white; }
+        .patient-sidebar nav { padding:12px 10px; }
+        .p-link { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; color:rgba(255,255,255,.6); text-decoration:none; font-size:14px; font-weight:500; transition:var(--transition); margin-bottom:2px; }
+        .p-link:hover, .p-link.active { background:var(--primary); color:white; }
+        .p-link i { width:16px; text-align:center; }
+        .p-sidebar-footer { padding:14px 10px; border-top:1px solid rgba(255,255,255,.08); margin-top:auto; }
+        .p-user { display:flex; align-items:center; gap:8px; padding:8px 10px; background:rgba(255,255,255,.06); border-radius:8px; margin-bottom:8px; }
+        .p-avatar { width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--primary),var(--secondary)); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:12px; }
+        .p-main { margin-left:240px; flex:1; }
+        .p-topbar { background:white; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+        .p-topbar h1 { font-size:18px; font-weight:700; color:var(--dark); }
+        .p-content { padding:24px; }
+        .welcome-card { background:linear-gradient(135deg,var(--primary),var(--secondary)); border-radius:16px; padding:28px; color:white; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between; }
+        .welcome-card h2 { font-family:'Playfair Display',serif; font-size:24px; margin-bottom:6px; }
+        .welcome-card p { font-size:14px; opacity:.85; }
+        .welcome-icon { font-size:60px; opacity:.25; }
+        .p-stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin-bottom:24px; }
+        .p-stat { background:white; border-radius:12px; padding:20px; display:flex; align-items:center; gap:14px; box-shadow:var(--shadow-sm); }
+        .p-stat-icon { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+        .p-stat-info .num { font-size:24px; font-weight:700; color:var(--dark); }
+        .p-stat-info .lbl { font-size:12px; color:var(--gray-400); }
+    </style>
+</head>
+<body>
+<div class="patient-layout">
+<aside class="patient-sidebar">
+    <a href="/" class="sidebar-brand"><div class="brand-icon"><i class="fas fa-plus"></i></div><div><h2>MediCare</h2></div></a>
+    <nav>
+        <a href="/patient/dashboard.html" class="p-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="/appointments.html" class="p-link"><i class="fas fa-calendar-plus"></i> Book Appointment</a>
+        <a href="/patient/appointments.html" class="p-link"><i class="fas fa-calendar-check"></i> My Appointments</a>
+        <a href="/patient/records.html" class="p-link"><i class="fas fa-file-medical"></i> Medical Records</a>
+        <a href="/patient/profile.html" class="p-link"><i class="fas fa-user"></i> My Profile</a>
+        <a href="/doctors.html" class="p-link"><i class="fas fa-user-md"></i> Find Doctors</a>
+        <a href="/services.html" class="p-link"><i class="fas fa-stethoscope"></i> Services</a>
+        <a href="/contact.html" class="p-link"><i class="fas fa-phone"></i> Contact</a>
+    </nav>
+    <div class="p-sidebar-footer">
+        <div class="p-user"><div class="p-avatar" id="p-initials">P</div><div><div style="font-size:13px;font-weight:600;color:white;" id="p-name">Patient</div><div style="font-size:11px;color:rgba(255,255,255,.4);">Patient</div></div></div>
+        <button onclick="logout()" class="p-link" style="width:100%;border:none;cursor:pointer;background:rgba(255,0,0,.1);color:#f87171;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+</aside>
+<div class="p-main">
+    <div class="p-topbar">
+        <h1>My Dashboard</h1>
+        <a href="/appointments.html" class="btn btn-primary btn-sm"><i class="fas fa-calendar-plus"></i> Book Appointment</a>
+    </div>
+    <div class="p-content">
+        <div class="welcome-card">
+            <div>
+                <h2>Welcome back, <span id="welcome-name">Patient</span>!</h2>
+                <p>Manage your health journey with MediCare Hospital</p>
+                <a href="/appointments.html" class="btn btn-outline-white btn-sm" style="margin-top:16px;"><i class="fas fa-calendar-plus"></i> Schedule Appointment</a>
+            </div>
+            <div class="welcome-icon"><i class="fas fa-heartbeat"></i></div>
+        </div>
+        <div class="p-stats-grid">
+            <div class="p-stat"><div class="p-stat-icon" style="background:#dbeafe;color:#1d4ed8;"><i class="fas fa-calendar-check"></i></div><div class="p-stat-info"><div class="num" id="stat-total">0</div><div class="lbl">Total Appointments</div></div></div>
+            <div class="p-stat"><div class="p-stat-icon" style="background:#fef3c7;color:#b45309;"><i class="fas fa-clock"></i></div><div class="p-stat-info"><div class="num" id="stat-pending">0</div><div class="lbl">Pending</div></div></div>
+            <div class="p-stat"><div class="p-stat-icon" style="background:#dcfce7;color:#166534;"><i class="fas fa-check-circle"></i></div><div class="p-stat-info"><div class="num" id="stat-completed">0</div><div class="lbl">Completed</div></div></div>
+            <div class="p-stat"><div class="p-stat-icon" style="background:#ccfbf1;color:#0f766e;"><i class="fas fa-file-medical"></i></div><div class="p-stat-info"><div class="num" id="stat-records">0</div><div class="lbl">Medical Records</div></div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div class="data-card">
+                <div class="data-card-header"><div><h3>Upcoming Appointments</h3></div><a href="/patient/appointments.html" class="btn btn-outline btn-sm">View All</a></div>
+                <div class="data-card-body" id="upcoming-appts"><div class="loading"><div class="spinner"></div></div></div>
+            </div>
+            <div class="data-card">
+                <div class="data-card-header"><div><h3>Quick Access</h3></div></div>
+                <div class="data-card-body" style="display:flex;flex-direction:column;gap:10px;">
+                    <a href="/appointments.html" class="btn btn-primary" style="justify-content:center;"><i class="fas fa-calendar-plus"></i> Book New Appointment</a>
+                    <a href="/doctors.html" class="btn btn-outline" style="justify-content:center;"><i class="fas fa-user-md"></i> Find a Doctor</a>
+                    <a href="/patient/records.html" class="btn btn-outline" style="justify-content:center;"><i class="fas fa-file-medical"></i> View Medical Records</a>
+                    <a href="/patient/profile.html" class="btn btn-outline" style="justify-content:center;"><i class="fas fa-user-edit"></i> Update Profile</a>
+                    <a href="/contact.html" class="btn btn-outline" style="justify-content:center;"><i class="fas fa-phone"></i> Contact Hospital</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="/js/main.js"></script>
+<script>
+async function init() {
+    const user = await checkAuth('patient');
+    if (!user) return;
+    document.getElementById('p-name').textContent = user.full_name;
+    document.getElementById('p-initials').textContent = getInitials(user.full_name);
+    document.getElementById('welcome-name').textContent = user.full_name.split(' ')[0];
+
+    const res = await apiGet('/my-appointments');
+    const appts = res.data || [];
+    document.getElementById('stat-total').textContent = appts.length;
+    document.getElementById('stat-pending').textContent = appts.filter(a => a.status === 'pending').length;
+    document.getElementById('stat-completed').textContent = appts.filter(a => a.status === 'completed').length;
+
+    const upcoming = appts.filter(a => a.status !== 'cancelled' && new Date(a.appointment_date) >= new Date());
+    const upEl = document.getElementById('upcoming-appts');
+    if (upcoming.length) {
+        upEl.innerHTML = upcoming.slice(0, 4).map(a => `
+            <div class="recent-item">
+                <div class="recent-avatar"><i class="fas fa-user-md" style="font-size:16px;"></i></div>
+                <div class="recent-info">
+                    <div class="name">${a.doctor_name}</div>
+                    <div class="meta">${formatDate(a.appointment_date)} at ${formatTime(a.appointment_time)}</div>
+                </div>
+                ${getStatusBadge(a.status)}
+            </div>
+        `).join('');
+    } else {
+        upEl.innerHTML = '<div style="text-align:center;color:var(--gray-400);padding:30px;"><i class="fas fa-calendar" style="font-size:36px;margin-bottom:12px;display:block;"></i><p>No upcoming appointments</p><a href="/appointments.html" class="btn btn-primary btn-sm" style="margin-top:12px;">Book Now</a></div>';
+    }
+
+    const recRes = await apiGet('/my-records');
+    document.getElementById('stat-records').textContent = (recRes.data || []).length;
+}
+init();
+</script>
+</body>
+</html>

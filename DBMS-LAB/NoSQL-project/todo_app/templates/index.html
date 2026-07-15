@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TaskFlow — Todo App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+
+  <!-- ── Background decoration ── -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-grid"></div>
+
+  <div class="wrapper">
+
+    <!-- ── Header ── -->
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">✦</span>
+        <span class="logo-text">TaskFlow</span>
+      </div>
+      <p class="tagline">Stay focused. Get things done.</p>
+    </header>
+
+    <!-- ── Stats Bar ── -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <span class="stat-number">{{ total }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-card">
+        <span class="stat-number accent-green">{{ completed }}</span>
+        <span class="stat-label">Completed</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-card">
+        <span class="stat-number accent-amber">{{ active }}</span>
+        <span class="stat-label">Remaining</span>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress-wrap">
+        {% if total > 0 %}
+          {% set pct = (completed / total * 100) | int %}
+        {% else %}
+          {% set pct = 0 %}
+        {% endif %}
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: {{ pct }}%"></div>
+        </div>
+        <span class="progress-label">{{ pct }}% done</span>
+      </div>
+    </div>
+
+    <!-- ── Add Task Form ── -->
+    <form action="/add" method="POST" class="add-form">
+      <div class="input-row">
+        <input
+          type="text"
+          name="task"
+          placeholder="Add a new task…"
+          autocomplete="off"
+          required
+        />
+        <select name="priority" class="priority-select">
+          <option value="high">🔴 High</option>
+          <option value="medium" selected>🟡 Medium</option>
+          <option value="low">🟢 Low</option>
+        </select>
+        <button type="submit" class="btn-add">
+          <span>+</span> Add Task
+        </button>
+      </div>
+    </form>
+
+    <!-- ── Filter Tabs ── -->
+    <div class="filter-tabs">
+      <a href="/?filter=all"       class="tab {{ 'active' if filter_status == 'all' }}">All</a>
+      <a href="/?filter=active"    class="tab {{ 'active' if filter_status == 'active' }}">Active</a>
+      <a href="/?filter=completed" class="tab {{ 'active' if filter_status == 'completed' }}">Completed</a>
+      {% if completed > 0 %}
+      <a href="/clear-completed" class="tab tab-danger">Clear Done</a>
+      {% endif %}
+    </div>
+
+    <!-- ── Todo List ── -->
+    <ul class="todo-list">
+      {% if todos %}
+        {% for todo in todos %}
+        <li class="todo-item {{ 'done' if todo.done }} priority-{{ todo.priority }}">
+
+          <!-- Left: checkbox + text -->
+          <div class="todo-left">
+            <a href="/toggle/{{ todo._id }}" class="checkbox {{ 'checked' if todo.done }}">
+              {% if todo.done %}<span class="check-icon">✓</span>{% endif %}
+            </a>
+            <div class="todo-body">
+              <span class="todo-text">{{ todo.task }}</span>
+              <span class="priority-badge badge-{{ todo.priority }}">
+                {% if todo.priority == 'high' %}🔴 High
+                {% elif todo.priority == 'medium' %}🟡 Medium
+                {% else %}🟢 Low{% endif %}
+              </span>
+            </div>
+          </div>
+
+          <!-- Right: edit + delete -->
+          <div class="todo-actions">
+            <!-- Edit button triggers modal -->
+            <button class="btn-icon btn-edit"
+                    onclick="openEdit('{{ todo._id }}', `{{ todo.task | e }}`)"
+                    title="Edit">✎</button>
+            <a href="/delete/{{ todo._id }}" class="btn-icon btn-delete" title="Delete">✕</a>
+          </div>
+
+        </li>
+        {% endfor %}
+      {% else %}
+        <li class="empty-state">
+          <span class="empty-icon">🎉</span>
+          <p>No tasks here! Add one above.</p>
+        </li>
+      {% endif %}
+    </ul>
+
+  </div><!-- /wrapper -->
+
+  <!-- ── Edit Modal ── -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <h3 class="modal-title">Edit Task</h3>
+      <form id="editForm" method="POST">
+        <input type="text" name="task" id="editInput" class="modal-input" required/>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeEdit()">Cancel</button>
+          <button type="submit" class="btn-save">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ── Edit Modal Logic ────────────────────────────────────────────────────
+    function openEdit(id, currentText) {
+      document.getElementById("editForm").action = "/edit/" + id;
+      document.getElementById("editInput").value = currentText;
+      document.getElementById("editModal").classList.add("show");
+      document.getElementById("editInput").focus();
+    }
+
+    function closeEdit() {
+      document.getElementById("editModal").classList.remove("show");
+    }
+
+    // Close modal on overlay click
+    document.getElementById("editModal").addEventListener("click", function(e) {
+      if (e.target === this) closeEdit();
+    });
+
+    // ── Animate todo items on load ──────────────────────────────────────────
+    document.querySelectorAll(".todo-item").forEach((el, i) => {
+      el.style.animationDelay = (i * 0.06) + "s";
+    });
+  </script>
+</body>
+</html>

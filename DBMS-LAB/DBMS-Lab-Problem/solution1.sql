@@ -1,0 +1,6 @@
+SELECT name 
+FROM student
+WHERE ID NOT IN (
+    SELECT ID
+    FROM takes
+);

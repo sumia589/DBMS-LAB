@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - MediCare Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { background: linear-gradient(135deg, var(--primary-dark), var(--primary), #0d9fb8); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-wrapper { width: 100%; max-width: 520px; }
+        .auth-brand { text-align: center; margin-bottom: 32px; }
+        .auth-brand .logo { width: 64px; height: 64px; background: white; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px; color: var(--primary); box-shadow: var(--shadow-lg); }
+        .auth-brand h1 { font-family: 'Playfair Display', serif; font-size: 28px; color: white; }
+        .auth-brand p { font-size: 14px; color: rgba(255,255,255,.7); margin-top: 6px; }
+        .auth-card { background: white; border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-xl); }
+        .input-icon { position: relative; }
+        .input-icon i.prefix { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+        .input-icon .form-control { padding-left: 40px; }
+        .auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: var(--gray-500); }
+        .auth-footer a { color: var(--primary); font-weight: 600; }
+        .password-strength { height: 4px; background: var(--gray-200); border-radius: 4px; margin-top: 6px; overflow: hidden; }
+        .strength-bar { height: 100%; transition: var(--transition); border-radius: 4px; }
+    </style>
+</head>
+<body>
+<div class="auth-wrapper">
+    <div class="auth-brand">
+        <div class="logo"><i class="fas fa-plus"></i></div>
+        <h1>MediCare Hospital</h1>
+        <p>Create your patient account</p>
+    </div>
+    <div class="auth-card">
+        <h2 style="font-size:22px;font-weight:700;color:var(--dark);margin-bottom:6px;">Create Account</h2>
+        <p style="font-size:14px;color:var(--gray-500);margin-bottom:24px;">Join MediCare and manage your healthcare online.</p>
+
+        <div class="alert" id="msg-alert" style="display:none;"></div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Full Name *</label>
+                <div class="input-icon">
+                    <i class="fas fa-user prefix"></i>
+                    <input type="text" id="full_name" class="form-control" placeholder="Your full name" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <div class="input-icon">
+                    <i class="fas fa-phone prefix"></i>
+                    <input type="tel" id="phone" class="form-control" placeholder="01XXXXXXXXX">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Email Address *</label>
+            <div class="input-icon">
+                <i class="fas fa-envelope prefix"></i>
+                <input type="email" id="email" class="form-control" placeholder="your@email.com" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Date of Birth</label>
+                <input type="date" id="dob" class="form-control">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Gender</label>
+                <select id="gender" class="form-control">
+                    <option value="">Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Address</label>
+            <input type="text" id="address" class="form-control" placeholder="Your address">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Password *</label>
+                <input type="password" id="password" class="form-control" placeholder="Min 6 characters" onkeyup="checkStrength()" required>
+                <div class="password-strength"><div class="strength-bar" id="strength-bar"></div></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Confirm Password *</label>
+                <input type="password" id="confirm_password" class="form-control" placeholder="Repeat password" required>
+            </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+            <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--gray-600);cursor:pointer;">
+                <input type="checkbox" id="terms" style="margin-top:2px;">
+                I agree to the <a href="#" style="color:var(--primary);margin:0 4px;">Terms of Service</a> and <a href="#" style="color:var(--primary);">Privacy Policy</a>
+            </label>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;" onclick="doRegister()" id="reg-btn">
+            <i class="fas fa-user-plus"></i> Create Account
+        </button>
+
+        <div class="auth-footer">
+            Already have an account? <a href="/login.html">Sign In</a>
+        </div>
+    </div>
+</div>
+
+<script src="/js/main.js"></script>
+<script>
+function checkStrength() {
+    const pwd = document.getElementById('password').value;
+    const bar = document.getElementById('strength-bar');
+    const colors = ['#ef4444', '#f59e0b', '#22c55e'];
+    let strength = 0;
+    if (pwd.length >= 6) strength++;
+    if (/[A-Z]/.test(pwd) && /[0-9]/.test(pwd)) strength++;
+    if (/[!@#$%^&*]/.test(pwd)) strength++;
+    bar.style.width = (strength * 33) + '%';
+    bar.style.background = colors[strength - 1] || '#e2e8f0';
+}
+
+async function doRegister() {
+    const alert_div = document.getElementById('msg-alert');
+    const btn = document.getElementById('reg-btn');
+
+    const full_name = document.getElementById('full_name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirm_password = document.getElementById('confirm_password').value;
+    const phone = document.getElementById('phone').value.trim();
+    const date_of_birth = document.getElementById('dob').value;
+    const gender = document.getElementById('gender').value;
+    const address = document.getElementById('address').value.trim();
+
+    const showAlert = (msg, type) => {
+        alert_div.style.display = 'flex';
+        alert_div.className = `alert alert-${type}`;
+        alert_div.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i> ${msg}`;
+    };
+
+    if (!full_name || !email || !password) return showAlert('Please fill in all required fields', 'danger');
+    if (password.length < 6) return showAlert('Password must be at least 6 characters', 'danger');
+    if (password !== confirm_password) return showAlert('Passwords do not match', 'danger');
+    if (!document.getElementById('terms').checked) return showAlert('Please accept the terms and conditions', 'danger');
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+    alert_div.style.display = 'none';
+
+    const res = await apiPost('/auth/register', { full_name, email, password, phone, date_of_birth, gender, address });
+
+    if (res.success) {
+        showAlert(res.message, 'success');
+        showToast('Account created! Please login.', 'success');
+        setTimeout(() => window.location.href = '/login.html', 1500);
+    } else {
+        showAlert(res.message, 'danger');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+    }
+}
+</script>
+</body>
+</html>

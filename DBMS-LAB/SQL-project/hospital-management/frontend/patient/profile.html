@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - MediCare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { background: #f0f4f8; }
+        .patient-layout { display: flex; min-height: 100vh; }
+        .patient-sidebar { width: 240px; min-width: 240px; background: var(--dark); position: fixed; top: 0; bottom: 0; left: 0; overflow-y: auto; z-index: 100; }
+        .patient-sidebar .sb { padding: 20px; border-bottom: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .patient-sidebar .bi { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
+        .patient-sidebar h2 { font-family: 'Playfair Display', serif; font-size: 15px; color: white; }
+        nav { padding: 12px 10px; }
+        .p-link { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: rgba(255,255,255,.6); text-decoration: none; font-size: 14px; font-weight: 500; transition: var(--transition); margin-bottom: 2px; }
+        .p-link:hover, .p-link.active { background: var(--primary); color: white; }
+        .p-link i { width: 16px; text-align: center; }
+        .p-main { margin-left: 240px; flex: 1; }
+        .p-topbar { background: white; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+        .p-topbar h1 { font-size: 18px; font-weight: 700; color: var(--dark); }
+        .p-content { padding: 24px; }
+        .p-sf { padding: 14px 10px; border-top: 1px solid rgba(255,255,255,.08); }
+        .p-user { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: rgba(255,255,255,.06); border-radius: 8px; margin-bottom: 8px; }
+        .p-av { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; }
+        .profile-avatar { width: 100px; height: 100px; border-radius: 20px; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: 700; overflow: hidden; }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    </style>
+</head>
+<body>
+<div class="patient-layout">
+<aside class="patient-sidebar">
+    <a href="/" class="sb"><div class="bi"><i class="fas fa-plus"></i></div><div><h2>MediCare</h2></div></a>
+    <nav>
+        <a href="/patient/dashboard.html" class="p-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="/appointments.html" class="p-link"><i class="fas fa-calendar-plus"></i> Book Appointment</a>
+        <a href="/patient/appointments.html" class="p-link"><i class="fas fa-calendar-check"></i> My Appointments</a>
+        <a href="/patient/records.html" class="p-link"><i class="fas fa-file-medical"></i> Medical Records</a>
+        <a href="/patient/profile.html" class="p-link active"><i class="fas fa-user"></i> My Profile</a>
+        <a href="/doctors.html" class="p-link"><i class="fas fa-user-md"></i> Find Doctors</a>
+    </nav>
+    <div class="p-sf">
+        <div class="p-user"><div class="p-av" id="p-initials">P</div><div><div style="font-size:13px;font-weight:600;color:white;" id="p-name">Patient</div></div></div>
+        <button onclick="logout()" class="p-link" style="width:100%;border:none;cursor:pointer;background:rgba(255,0,0,.1);color:#f87171;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+</aside>
+<div class="p-main">
+    <div class="p-topbar"><h1>My Profile</h1></div>
+    <div class="p-content">
+        <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:24px;align-items:start;">
+            <div style="background:white;border-radius:16px;padding:28px;box-shadow:var(--shadow-sm);text-align:center;">
+                <div class="profile-avatar" id="profile-avatar" style="margin:0 auto 20px;">P</div>
+                <h2 style="font-size:18px;font-weight:700;color:var(--dark);" id="profile-fullname">Loading...</h2>
+                <p style="font-size:13px;color:var(--gray-400);margin-top:4px;" id="profile-email">-</p>
+                <span class="badge badge-primary" style="margin-top:10px;">Patient</span>
+                <hr style="border:none;border-top:1px solid var(--gray-100);margin:20px 0;">
+                <div style="text-align:left;display:flex;flex-direction:column;gap:12px;">
+                    <div style="font-size:13px;color:var(--gray-600);"><i class="fas fa-phone" style="color:var(--primary);width:18px;margin-right:6px;"></i><span id="profile-phone">—</span></div>
+                    <div style="font-size:13px;color:var(--gray-600);"><i class="fas fa-venus-mars" style="color:var(--primary);width:18px;margin-right:6px;"></i><span id="profile-gender">—</span></div>
+                    <div style="font-size:13px;color:var(--gray-600);"><i class="fas fa-birthday-cake" style="color:var(--primary);width:18px;margin-right:6px;"></i><span id="profile-dob">—</span></div>
+                    <div style="font-size:13px;color:var(--gray-600);"><i class="fas fa-map-marker-alt" style="color:var(--primary);width:18px;margin-right:6px;"></i><span id="profile-address">—</span></div>
+                </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:20px;">
+                <div style="background:white;border-radius:16px;padding:28px;box-shadow:var(--shadow-sm);">
+                    <h3 style="font-size:16px;font-weight:700;color:var(--dark);margin-bottom:20px;">Update Profile</h3>
+                    <div class="alert" id="profile-msg" style="display:none;"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="edit-name" class="form-control"></div>
+                        <div class="form-group"><label class="form-label">Phone</label><input type="tel" id="edit-phone" class="form-control"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" id="edit-dob" class="form-control"></div>
+                        <div class="form-group"><label class="form-label">Gender</label><select id="edit-gender" class="form-control"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+                    </div>
+                    <div class="form-group"><label class="form-label">Address</label><input type="text" id="edit-address" class="form-control"></div>
+                    <div class="form-group"><label class="form-label">Profile Photo</label><input type="file" id="edit-photo" class="form-control" accept="image/*"></div>
+                    <button class="btn btn-primary" onclick="saveProfile()"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+                <div style="background:white;border-radius:16px;padding:28px;box-shadow:var(--shadow-sm);">
+                    <h3 style="font-size:16px;font-weight:700;color:var(--dark);margin-bottom:20px;">Change Password</h3>
+                    <div class="alert" id="pass-msg" style="display:none;"></div>
+                    <div class="form-group"><label class="form-label">Current Password</label><input type="password" id="cur-pass" class="form-control"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">New Password</label><input type="password" id="new-pass" class="form-control"></div>
+                        <div class="form-group"><label class="form-label">Confirm New</label><input type="password" id="conf-pass" class="form-control"></div>
+                    </div>
+                    <button class="btn btn-outline" onclick="changePass()"><i class="fas fa-key"></i> Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="/js/main.js"></script>
+<script>
+let currentUser = null;
+async function init() {
+    const user = await checkAuth('patient');
+    if (!user) return;
+    currentUser = user;
+    document.getElementById('p-name').textContent = user.full_name;
+    document.getElementById('p-initials').textContent = getInitials(user.full_name);
+    document.getElementById('profile-fullname').textContent = user.full_name;
+    document.getElementById('profile-email').textContent = user.email;
+    
+    // Re-fetch full profile
+    const res = await apiGet('/auth/me');
+    if (res.success) {
+        const u = res.user;
+        document.getElementById('profile-avatar').innerHTML = u.profile_image ? `<img src="${u.profile_image}">` : getInitials(u.full_name);
+        document.getElementById('edit-name').value = u.full_name;
+    }
+}
+
+async function saveProfile() {
+    const fd = new FormData();
+    fd.append('full_name', document.getElementById('edit-name').value);
+    fd.append('phone', document.getElementById('edit-phone').value);
+    fd.append('date_of_birth', document.getElementById('edit-dob').value);
+    fd.append('gender', document.getElementById('edit-gender').value);
+    fd.append('address', document.getElementById('edit-address').value);
+    const photo = document.getElementById('edit-photo').files[0];
+    if (photo) fd.append('profile_image', photo);
+
+    const res = await fetch('/api/auth/profile', { method: 'PUT', credentials: 'include', body: fd }).then(r => r.json());
+    const msg = document.getElementById('profile-msg');
+    msg.style.display = 'flex';
+    msg.className = `alert alert-${res.success ? 'success' : 'danger'}`;
+    msg.innerHTML = `<i class="fas fa-${res.success ? 'check' : 'exclamation'}-circle"></i> ${res.message}`;
+    if (res.success) { showToast(res.message, 'success'); setTimeout(() => location.reload(), 1000); }
+}
+
+async function changePass() {
+    const cur = document.getElementById('cur-pass').value;
+    const np = document.getElementById('new-pass').value;
+    const cp = document.getElementById('conf-pass').value;
+    const msg = document.getElementById('pass-msg');
+    const show = (m, t) => { msg.style.display = 'flex'; msg.className = `alert alert-${t}`; msg.innerHTML = `<i class="fas fa-${t === 'success' ? 'check' : 'exclamation'}-circle"></i> ${m}`; };
+    if (!cur || !np) return show('Fill in all fields', 'danger');
+    if (np !== cp) return show('Passwords do not match', 'danger');
+    if (np.length < 6) return show('Password must be at least 6 characters', 'danger');
+    const res = await apiPut('/auth/change-password', { current_password: cur, new_password: np });
+    show(res.message, res.success ? 'success' : 'danger');
+    if (res.success) { document.getElementById('cur-pass').value = ''; document.getElementById('new-pass').value = ''; document.getElementById('conf-pass').value = ''; }
+}
+
+init();
+</script>
+</body>
+</html>

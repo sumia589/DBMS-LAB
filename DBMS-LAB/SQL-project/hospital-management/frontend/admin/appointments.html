@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+<aside class="sidebar" id="sidebar">
+    <a href="/" class="sidebar-brand"><div class="brand-icon"><i class="fas fa-plus"></i></div><div><h2>MediCare</h2><p>Admin Panel</p></div></a>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Main</div>
+        <a href="/admin/dashboard.html" class="sidebar-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <div class="nav-section-title">Management</div>
+        <a href="/admin/doctors.html" class="sidebar-link"><i class="fas fa-user-md"></i> Doctors</a>
+        <a href="/admin/patients.html" class="sidebar-link"><i class="fas fa-users"></i> Patients</a>
+        <a href="/admin/appointments.html" class="sidebar-link active"><i class="fas fa-calendar-check"></i> Appointments</a>
+        <a href="/admin/departments.html" class="sidebar-link"><i class="fas fa-hospital"></i> Departments</a>
+        <a href="/admin/services.html" class="sidebar-link"><i class="fas fa-stethoscope"></i> Services</a>
+        <a href="/admin/records.html" class="sidebar-link"><i class="fas fa-file-medical"></i> Medical Records</a>
+        <div class="nav-section-title">Content</div>
+        <a href="/admin/news.html" class="sidebar-link"><i class="fas fa-newspaper"></i> News & Events</a>
+        <a href="/admin/testimonials.html" class="sidebar-link"><i class="fas fa-star"></i> Testimonials</a>
+        <a href="/admin/messages.html" class="sidebar-link"><i class="fas fa-envelope"></i> Messages</a>
+        <div class="nav-section-title">Settings</div>
+        <a href="/admin/settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Hospital Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="admin-user"><div class="admin-avatar" id="admin-initials">A</div><div class="admin-user-info"><div class="name" id="admin-name">Admin</div><div class="role">Administrator</div></div></div>
+        <button onclick="logout()" class="sidebar-link" style="width:100%;border:none;cursor:pointer;background:rgba(255,0,0,.1);color:#f87171;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+</aside>
+<div class="main-content">
+    <div class="topbar">
+        <div style="display:flex;align-items:center;gap:14px;">
+            <button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+            <div class="topbar-left"><h1>Appointments</h1><p>Manage all appointments</p></div>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="filters-bar">
+            <select class="filter-select" onchange="loadAppts(this.value)" id="status-filter">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <input type="date" class="filter-select" onchange="filterByDate(this.value)" id="date-filter">
+            <button class="btn btn-outline btn-sm" onclick="clearFilters()"><i class="fas fa-times"></i> Clear</button>
+        </div>
+        <div class="data-card">
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Patient</th><th>Doctor</th><th>Date & Time</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="appts-table"><tr><td colspan="6" class="text-center"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Update Modal -->
+<div class="modal-overlay" id="update-modal">
+<div class="modal">
+    <div class="modal-header"><h2>Update Appointment</h2><button class="modal-close" onclick="closeModal('update-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+        <input type="hidden" id="appt-id">
+        <div class="form-group"><label class="form-label">Status</label>
+            <select id="appt-status" class="form-control">
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+        </div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea id="appt-notes" class="form-control" placeholder="Add notes..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-outline btn-sm" onclick="closeModal('update-modal')">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="updateAppt()"><i class="fas fa-save"></i> Update</button>
+    </div>
+</div>
+</div>
+
+<script src="/js/main.js"></script>
+<script>
+async function init() {
+    const user = await checkAuth('admin');
+    if (!user) return;
+    document.getElementById('admin-name').textContent = user.full_name;
+    document.getElementById('admin-initials').textContent = getInitials(user.full_name);
+    loadAppts();
+}
+async function loadAppts(status = '', date = '') {
+    const s = document.getElementById('status-filter').value;
+    const d = document.getElementById('date-filter').value;
+    let url = '/admin/appointments?';
+    if (s) url += `status=${s}&`;
+    if (d) url += `date=${d}&`;
+    const res = await apiGet(url);
+    const tbody = document.getElementById('appts-table');
+    const appts = res.data || [];
+    if (!appts.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:40px;">No appointments found</td></tr>'; return; }
+    tbody.innerHTML = appts.map(a => `<tr>
+        <td><div style="font-weight:600;font-size:14px;">${a.patient_name}</div><div style="font-size:12px;color:var(--gray-400);">${a.patient_phone || ''}</div></td>
+        <td><div style="font-weight:600;font-size:13px;">${a.doctor_name}</div><div style="font-size:12px;color:var(--gray-400);">${a.specialization || ''}</div></td>
+        <td><div style="font-size:13px;font-weight:600;">${formatDate(a.appointment_date)}</div><div style="font-size:12px;color:var(--primary);">${formatTime(a.appointment_time)}</div></td>
+        <td><span class="badge badge-info">${capitalize(a.type)}</span></td>
+        <td>${getStatusBadge(a.status)}</td>
+        <td><button class="action-btn edit" onclick="openUpdate(${a.id}, '${a.status}', \`${a.notes||''}\`)" title="Update"><i class="fas fa-edit"></i></button></td>
+    </tr>`).join('');
+}
+function clearFilters() {
+    document.getElementById('status-filter').value = '';
+    document.getElementById('date-filter').value = '';
+    loadAppts();
+}
+function filterByDate(date) { loadAppts(); }
+function openUpdate(id, status, notes) {
+    document.getElementById('appt-id').value = id;
+    document.getElementById('appt-status').value = status;
+    document.getElementById('appt-notes').value = notes;
+    openModal('update-modal');
+}
+async function updateAppt() {
+    const id = document.getElementById('appt-id').value;
+    const status = document.getElementById('appt-status').value;
+    const notes = document.getElementById('appt-notes').value;
+    const res = await apiPut(`/admin/appointments/${id}`, { status, notes });
+    if (res.success) { showToast(res.message, 'success'); closeModal('update-modal'); loadAppts(); }
+    else showToast(res.message, 'error');
+}
+init();
+</script>
+</body>
+</html>

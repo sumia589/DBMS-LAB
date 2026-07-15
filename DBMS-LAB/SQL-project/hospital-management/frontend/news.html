@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News & Events - MediCare Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<nav class="navbar"><div class="navbar-inner">
+    <a href="/" class="navbar-brand"><div class="brand-icon"><i class="fas fa-plus"></i></div>MediCare<span class="brand-plus"> Hospital</span></a>
+    <ul class="nav-links"><li><a href="/">Home</a></li><li><a href="/about.html">About</a></li><li><a href="/doctors.html">Doctors</a></li><li><a href="/services.html">Services</a></li><li><a href="/appointments.html">Appointments</a></li><li><a href="/news.html" class="active">News</a></li><li><a href="/contact.html">Contact</a></li></ul>
+    <div class="nav-actions"></div>
+    <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></div>
+</div></nav>
+
+<div class="page-header">
+    <div class="container"><h1>News & Events</h1><p>Stay updated with the latest from MediCare Hospital</p><div class="breadcrumb"><a href="/">Home</a><span>/</span>News</div></div>
+</div>
+
+<section>
+    <div class="container">
+        <div class="news-grid" id="news-grid"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-bottom" style="border:none;padding:30px 0;"><p>&copy; 2024 MediCare General Hospital. All Rights Reserved.</p></div></div></footer>
+
+<script src="/js/main.js"></script>
+<script>
+async function init() {
+    const res = await apiGet('/news');
+    const grid = document.getElementById('news-grid');
+    const news = res.data || [];
+    grid.innerHTML = news.length ? news.map(n => `
+        <div class="news-card">
+            <div class="news-img">${n.image ? `<img src="${n.image}" alt="${n.title}">` : '<i class="fas fa-newspaper"></i>'}</div>
+            <div class="news-body">
+                <div class="news-category">${n.category || 'News'}</div>
+                <h3>${n.title}</h3>
+                <p>${n.excerpt || (n.content ? n.content.substring(0, 120) + '...' : '')}</p>
+                <div class="news-meta"><span><i class="fas fa-calendar"></i> ${formatDate(n.created_at)}</span><span><i class="fas fa-user"></i> ${n.author_name || 'Admin'}</span></div>
+            </div>
+        </div>
+    `).join('') : '<p style="text-align:center;color:var(--gray-400);grid-column:1/-1;padding:60px;">No news articles published yet.</p>';
+}
+init();
+</script>
+</body>
+</html>

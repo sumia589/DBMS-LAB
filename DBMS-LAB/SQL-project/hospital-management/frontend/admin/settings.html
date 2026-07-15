@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Settings - Admin</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/admin.css"></head>
+<body><div class="admin-layout">
+<aside class="sidebar" id="sidebar"><a href="/" class="sidebar-brand"><div class="brand-icon"><i class="fas fa-plus"></i></div><div><h2>MediCare</h2><p>Admin Panel</p></div></a><nav class="sidebar-nav"><a href="/admin/dashboard.html" class="sidebar-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a><div class="nav-section-title">Management</div><a href="/admin/doctors.html" class="sidebar-link"><i class="fas fa-user-md"></i> Doctors</a><a href="/admin/patients.html" class="sidebar-link"><i class="fas fa-users"></i> Patients</a><a href="/admin/appointments.html" class="sidebar-link"><i class="fas fa-calendar-check"></i> Appointments</a><a href="/admin/departments.html" class="sidebar-link"><i class="fas fa-hospital"></i> Departments</a><a href="/admin/services.html" class="sidebar-link"><i class="fas fa-stethoscope"></i> Services</a><a href="/admin/records.html" class="sidebar-link"><i class="fas fa-file-medical"></i> Medical Records</a><div class="nav-section-title">Content</div><a href="/admin/news.html" class="sidebar-link"><i class="fas fa-newspaper"></i> News</a><a href="/admin/testimonials.html" class="sidebar-link"><i class="fas fa-star"></i> Testimonials</a><a href="/admin/messages.html" class="sidebar-link"><i class="fas fa-envelope"></i> Messages</a><div class="nav-section-title">Settings</div><a href="/admin/settings.html" class="sidebar-link active"><i class="fas fa-cog"></i> Settings</a></nav>
+<div class="sidebar-footer"><div class="admin-user"><div class="admin-avatar" id="admin-initials">A</div><div class="admin-user-info"><div class="name" id="admin-name">Admin</div><div class="role">Administrator</div></div></div><button onclick="logout()" class="sidebar-link" style="width:100%;border:none;cursor:pointer;background:rgba(255,0,0,.1);color:#f87171;"><i class="fas fa-sign-out-alt"></i> Logout</button></div></aside>
+<div class="main-content"><div class="topbar"><div style="display:flex;align-items:center;gap:14px;"><button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button><div class="topbar-left"><h1>Hospital Settings</h1><p>Update hospital information</p></div></div><button class="btn btn-primary btn-sm" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button></div>
+<div class="page-content">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+<div class="data-card"><div class="data-card-header"><div><h3>Basic Information</h3></div></div><div class="data-card-body">
+<div class="form-group"><label class="form-label">Hospital Name</label><input type="text" id="hospital_name" class="form-control" placeholder="Hospital name"></div>
+<div class="form-group"><label class="form-label">Tagline</label><input type="text" id="hospital_tagline" class="form-control" placeholder="Your tagline"></div>
+<div class="form-group"><label class="form-label">Established Year</label><input type="text" id="established_year" class="form-control" placeholder="1985"></div>
+<div class="form-group"><label class="form-label">Total Beds</label><input type="text" id="beds_count" class="form-control" placeholder="500"></div>
+<div class="form-group"><label class="form-label">Total Doctors</label><input type="text" id="doctors_count" class="form-control" placeholder="150"></div>
+<div class="form-group"><label class="form-label">Patients Served</label><input type="text" id="patients_served" class="form-control" placeholder="100000"></div>
+</div></div>
+<div class="data-card"><div class="data-card-header"><div><h3>Contact Details</h3></div></div><div class="data-card-body">
+<div class="form-group"><label class="form-label">Address</label><textarea id="address" class="form-control" placeholder="Hospital address"></textarea></div>
+<div class="form-group"><label class="form-label">Phone</label><input type="text" id="phone" class="form-control" placeholder="+880 1700-000000"></div>
+<div class="form-group"><label class="form-label">Emergency Phone</label><input type="text" id="emergency_phone" class="form-control" placeholder="+880 1700-999999"></div>
+<div class="form-group"><label class="form-label">Email</label><input type="email" id="email" class="form-control" placeholder="info@hospital.com"></div>
+<div class="form-group"><label class="form-label">Working Hours</label><input type="text" id="working_hours" class="form-control" placeholder="Mon-Sat: 8:00 AM - 8:00 PM"></div>
+</div></div>
+<div class="data-card"><div class="data-card-header"><div><h3>Social Media</h3></div></div><div class="data-card-body">
+<div class="form-group"><label class="form-label"><i class="fab fa-facebook" style="color:#1877f2;margin-right:6px;"></i>Facebook</label><input type="url" id="facebook" class="form-control" placeholder="https://facebook.com/..."></div>
+<div class="form-group"><label class="form-label"><i class="fab fa-twitter" style="color:#1da1f2;margin-right:6px;"></i>Twitter</label><input type="url" id="twitter" class="form-control" placeholder="https://twitter.com/..."></div>
+<div class="form-group"><label class="form-label"><i class="fab fa-instagram" style="color:#e1306c;margin-right:6px;"></i>Instagram</label><input type="url" id="instagram" class="form-control" placeholder="https://instagram.com/..."></div>
+</div></div>
+</div>
+</div></div></div>
+<script src="/js/main.js"></script>
+<script>
+async function init(){const user=await checkAuth('admin');if(!user)return;document.getElementById('admin-name').textContent=user.full_name;document.getElementById('admin-initials').textContent=getInitials(user.full_name);
+const res=await apiGet('/hospital-info');if(res.success){const d=res.data;['hospital_name','hospital_tagline','address','phone','emergency_phone','email','working_hours','established_year','beds_count','doctors_count','patients_served','facebook','twitter','instagram'].forEach(k=>{const el=document.getElementById(k);if(el&&d[k])el.value=d[k];});}}
+async function saveSettings(){const keys=['hospital_name','hospital_tagline','address','phone','emergency_phone','email','working_hours','established_year','beds_count','doctors_count','patients_served','facebook','twitter','instagram'];const data={};keys.forEach(k=>{const el=document.getElementById(k);if(el)data[k]=el.value;});
+const res=await apiPut('/admin/hospital-info',data);if(res.success)showToast(res.message,'success');else showToast(res.message,'error');}
+init();
+</script></body></html>

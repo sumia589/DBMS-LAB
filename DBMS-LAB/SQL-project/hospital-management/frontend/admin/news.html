@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+<aside class="sidebar" id="sidebar">
+    <a href="/" class="sidebar-brand"><div class="brand-icon"><i class="fas fa-plus"></i></div><div><h2>MediCare</h2><p>Admin Panel</p></div></a>
+    <nav class="sidebar-nav">
+        <a href="/admin/dashboard.html" class="sidebar-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <div class="nav-section-title">Management</div>
+        <a href="/admin/doctors.html" class="sidebar-link"><i class="fas fa-user-md"></i> Doctors</a>
+        <a href="/admin/patients.html" class="sidebar-link"><i class="fas fa-users"></i> Patients</a>
+        <a href="/admin/appointments.html" class="sidebar-link"><i class="fas fa-calendar-check"></i> Appointments</a>
+        <a href="/admin/departments.html" class="sidebar-link"><i class="fas fa-hospital"></i> Departments</a>
+        <a href="/admin/services.html" class="sidebar-link"><i class="fas fa-stethoscope"></i> Services</a>
+        <a href="/admin/records.html" class="sidebar-link"><i class="fas fa-file-medical"></i> Medical Records</a>
+        <div class="nav-section-title">Content</div>
+        <a href="/admin/news.html" class="sidebar-link active"><i class="fas fa-newspaper"></i> News & Events</a>
+        <a href="/admin/testimonials.html" class="sidebar-link"><i class="fas fa-star"></i> Testimonials</a>
+        <a href="/admin/messages.html" class="sidebar-link"><i class="fas fa-envelope"></i> Messages</a>
+        <div class="nav-section-title">Settings</div>
+        <a href="/admin/settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="admin-user"><div class="admin-avatar" id="admin-initials">A</div><div class="admin-user-info"><div class="name" id="admin-name">Admin</div><div class="role">Administrator</div></div></div>
+        <button onclick="logout()" class="sidebar-link" style="width:100%;border:none;cursor:pointer;background:rgba(255,0,0,.1);color:#f87171;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+</aside>
+<div class="main-content">
+    <div class="topbar">
+        <div style="display:flex;align-items:center;gap:14px;">
+            <button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+            <div class="topbar-left"><h1>News & Events</h1><p>Manage hospital news and announcements</p></div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('news-modal')"><i class="fas fa-plus"></i> Add News</button>
+    </div>
+    <div class="page-content">
+        <div class="data-card">
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Title</th><th>Category</th><th>Author</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="news-table"><tr><td colspan="6" class="text-center"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="news-modal">
+<div class="modal" style="max-width:620px;">
+    <div class="modal-header"><h2 id="news-modal-title">Add News</h2><button class="modal-close" onclick="closeModal('news-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+        <input type="hidden" id="news-id">
+        <div class="form-group"><label class="form-label">Title *</label><input type="text" id="news-title" class="form-control" placeholder="News headline"></div>
+        <div class="form-row">
+            <div class="form-group"><label class="form-label">Category</label><select id="news-category" class="form-control"><option>Hospital News</option><option>Events</option><option>Health Tips</option><option>Announcements</option></select></div>
+        </div>
+        <div class="form-group"><label class="form-label">Excerpt</label><input type="text" id="news-excerpt" class="form-control" placeholder="Short summary..."></div>
+        <div class="form-group"><label class="form-label">Content *</label><textarea id="news-content" class="form-control" style="min-height:140px;" placeholder="Full news content..."></textarea></div>
+        <div class="form-group"><label class="form-label">Image</label><input type="file" id="news-image" class="form-control" accept="image/*"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-outline btn-sm" onclick="closeModal('news-modal')">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="saveNews()"><i class="fas fa-save"></i> Publish</button>
+    </div>
+</div>
+</div>
+
+<script src="/js/main.js"></script>
+<script>
+let newsList = [];
+async function init() {
+    const user = await checkAuth('admin');
+    if (!user) return;
+    document.getElementById('admin-name').textContent = user.full_name;
+    document.getElementById('admin-initials').textContent = getInitials(user.full_name);
+    load();
+}
+async function load() {
+    const res = await apiGet('/news');
+    newsList = res.data || [];
+    const tb = document.getElementById('news-table');
+    tb.innerHTML = newsList.length ? newsList.map(n => `<tr>
+        <td><div style="font-weight:600;font-size:14px;max-width:200px;">${n.title}</div></td>
+        <td><span class="badge badge-info">${n.category || 'News'}</span></td>
+        <td style="font-size:13px;">${n.author_name || 'Admin'}</td>
+        <td style="font-size:13px;">${formatDate(n.created_at)}</td>
+        <td><span class="badge ${n.is_published ? 'badge-success' : 'badge-warning'}">${n.is_published ? 'Published' : 'Draft'}</span></td>
+        <td><div style="display:flex;gap:6px;">
+            <button class="action-btn edit" onclick="edit(${n.id})" title="Edit"><i class="fas fa-edit"></i></button>
+            <button class="action-btn delete" onclick="del(${n.id},'${n.title.replace(/'/g,"\\'")}')" title="Delete"><i class="fas fa-trash"></i></button>
+        </div></td>
+    </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:40px;">No news articles found</td></tr>';
+}
+function edit(id) {
+    const n = newsList.find(x => x.id == id);
+    if (!n) return;
+    document.getElementById('news-modal-title').textContent = 'Edit News';
+    document.getElementById('news-id').value = n.id;
+    document.getElementById('news-title').value = n.title;
+    document.getElementById('news-category').value = n.category || 'Hospital News';
+    document.getElementById('news-excerpt').value = n.excerpt || '';
+    document.getElementById('news-content').value = n.content || '';
+    openModal('news-modal');
+}
+async function saveNews() {
+    const id = document.getElementById('news-id').value;
+    const fd = new FormData();
+    fd.append('title', document.getElementById('news-title').value);
+    fd.append('category', document.getElementById('news-category').value);
+    fd.append('excerpt', document.getElementById('news-excerpt').value);
+    fd.append('content', document.getElementById('news-content').value);
+    const img = document.getElementById('news-image').files[0];
+    if (img) fd.append('image', img);
+
+    let res;
+    if (id) {
+        res = await fetch(`/api/admin/news/${id}`, { method: 'PUT', credentials: 'include', body: fd }).then(r => r.json());
+    } else {
+        res = await fetch('/api/admin/news', { method: 'POST', credentials: 'include', body: fd }).then(r => r.json());
+    }
+    if (res.success) { showToast(res.message, 'success'); closeModal('news-modal'); document.getElementById('news-id').value = ''; load(); }
+    else showToast(res.message, 'error');
+}
+async function del(id, title) {
+    if (!confirm(`Delete "${title}"?`)) return;
+    const res = await apiDelete(`/admin/news/${id}`);
+    if (res.success) { showToast(res.message, 'success'); load(); }
+    else showToast(res.message, 'error');
+}
+init();
+</script>
+</body>
+</html>

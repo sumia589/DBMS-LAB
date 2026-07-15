@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MediCare Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, #0d9fb8 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-wrapper { width: 100%; max-width: 460px; }
+        .auth-brand { text-align: center; margin-bottom: 32px; }
+        .auth-brand .logo { width: 64px; height: 64px; background: white; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px; color: var(--primary); box-shadow: var(--shadow-lg); }
+        .auth-brand h1 { font-family: 'Playfair Display', serif; font-size: 28px; color: white; }
+        .auth-brand p { font-size: 14px; color: rgba(255,255,255,.7); margin-top: 6px; }
+        .auth-card { background: white; border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-xl); }
+        .auth-tabs { display: flex; gap: 4px; background: var(--gray-100); border-radius: 10px; padding: 4px; margin-bottom: 28px; }
+        .auth-tab { flex: 1; padding: 10px; border: none; background: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--gray-500); transition: var(--transition); font-family: inherit; }
+        .auth-tab.active { background: white; color: var(--primary); box-shadow: var(--shadow-sm); }
+        .auth-card h2 { font-size: 22px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+        .auth-card p { font-size: 14px; color: var(--gray-500); margin-bottom: 24px; }
+        .input-icon { position: relative; }
+        .input-icon i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+        .input-icon .form-control { padding-left: 40px; }
+        .toggle-pass { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-400); cursor: pointer; }
+        .forgot { font-size: 13px; color: var(--primary); text-align: right; display: block; margin-top: 6px; }
+        .divider { text-align: center; position: relative; margin: 24px 0; }
+        .divider::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--gray-200); }
+        .divider span { background: white; padding: 0 12px; font-size: 13px; color: var(--gray-400); position: relative; }
+        .auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: var(--gray-500); }
+        .auth-footer a { color: var(--primary); font-weight: 600; }
+        #login-error { display: none; }
+    </style>
+</head>
+<body>
+<div class="auth-wrapper">
+    <div class="auth-brand">
+        <div class="logo"><i class="fas fa-plus"></i></div>
+        <h1>MediCare Hospital</h1>
+        <p>Sign in to your account</p>
+    </div>
+    <div class="auth-card">
+        <div class="auth-tabs">
+            <button class="auth-tab active" onclick="setRole('patient', this)">
+                <i class="fas fa-user"></i> Patient
+            </button>
+            <button class="auth-tab" onclick="setRole('admin', this)">
+                <i class="fas fa-user-shield"></i> Admin
+            </button>
+        </div>
+
+        <h2 id="login-title">Patient Login</h2>
+        <p id="login-desc">Welcome back! Access your health records and appointments.</p>
+
+        <div class="alert alert-danger" id="login-error">
+            <i class="fas fa-exclamation-circle"></i> <span id="error-msg"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <div class="input-icon">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-icon" style="position:relative;">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                <i class="fas fa-eye toggle-pass" onclick="togglePass()"></i>
+            </div>
+            <a href="#" class="forgot">Forgot password?</a>
+        </div>
+
+        <input type="hidden" id="role" value="patient">
+
+        <button class="btn btn-primary" style="width:100%;" onclick="doLogin()" id="login-btn">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+
+        <div class="divider"><span>or</span></div>
+
+        <div class="auth-footer">
+            Don't have an account? <a href="/register.html">Register Here</a>
+        </div>
+    </div>
+</div>
+
+<script src="/js/main.js"></script>
+<script>
+function setRole(role, btn) {
+    document.getElementById('role').value = role;
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('login-title').textContent = role === 'admin' ? 'Admin Login' : 'Patient Login';
+    document.getElementById('login-desc').textContent = role === 'admin' ? 'Access the hospital management dashboard.' : 'Welcome back! Access your health records and appointments.';
+    document.getElementById('login-error').style.display = 'none';
+}
+
+function togglePass() {
+    const inp = document.getElementById('password');
+    const icon = document.querySelector('.toggle-pass');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+}
+
+async function doLogin() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const role = document.getElementById('role').value;
+    const btn = document.getElementById('login-btn');
+    const errDiv = document.getElementById('login-error');
+    const errMsg = document.getElementById('error-msg');
+
+    if (!email || !password) {
+        errDiv.style.display = 'flex';
+        errMsg.textContent = 'Please enter email and password';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+    errDiv.style.display = 'none';
+
+    const res = await apiPost('/auth/login', { email, password, role });
+
+    if (res.success) {
+        showToast('Login successful! Redirecting...', 'success');
+        setTimeout(() => window.location.href = res.redirect, 800);
+    } else {
+        errDiv.style.display = 'flex';
+        errMsg.textContent = res.message;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+    }
+}
+
+// Enter key
+document.addEventListener('keypress', e => { if (e.key === 'Enter') doLogin(); });
+
+// Redirect if already logged in
+apiGet('/auth/me').then(res => {
+    if (res.success) {
+        window.location.href = res.user.role === 'admin' ? '/admin/dashboard.html' : '/patient/dashboard.html';
+    }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediCare Hospital - Your Health, Our Priority</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .why-us-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; }
+        .why-card { text-align: center; padding: 32px 20px; background: white; border-radius: 16px; box-shadow: var(--shadow); transition: var(--transition); }
+        .why-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-xl); }
+        .why-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 24px; color: white; }
+        .why-card h3 { font-size: 16px; font-weight: 600; color: var(--dark); margin-bottom: 8px; }
+        .why-card p { font-size: 13px; color: var(--gray-500); line-height: 1.6; }
+        .appointment-cta { background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: var(--radius-lg); padding: 60px; text-align: center; color: white; }
+        .appointment-cta h2 { font-family: 'Playfair Display', serif; font-size: 36px; margin-bottom: 16px; }
+        .appointment-cta p { font-size: 17px; opacity: .85; margin-bottom: 32px; }
+        .emergency-card { background: linear-gradient(135deg, #991b1b, var(--danger)); border-radius: 16px; padding: 28px; color: white; text-align: center; }
+        .emergency-card i { font-size: 40px; margin-bottom: 12px; }
+        .emergency-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .emergency-card p { font-size: 14px; opacity: .85; margin-bottom: 16px; }
+        .emergency-number { font-size: 28px; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<!-- Emergency Banner -->
+<div class="emergency-banner">
+    <i class="fas fa-ambulance"></i>
+    <strong>24/7 Emergency Line:</strong> <a href="tel:+8801700999999">+880 1700-999999</a>
+    &nbsp;|&nbsp; For life-threatening emergencies, please call immediately!
+</div>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-inner">
+        <a href="/" class="navbar-brand">
+            <div class="brand-icon"><i class="fas fa-plus"></i></div>
+            MediCare<span class="brand-plus"> Hospital</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/" class="active">Home</a></li>
+            <li><a href="/about.html">About</a></li>
+            <li><a href="/doctors.html">Doctors</a></li>
+            <li><a href="/services.html">Services</a></li>
+            <li><a href="/appointments.html">Appointments</a></li>
+            <li><a href="/news.html">News</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="/login.html" class="btn btn-outline btn-sm">Login</a>
+            <a href="/register.html" class="btn btn-primary btn-sm">Register</a>
+        </div>
+        <div class="hamburger" onclick="this.nextElementSibling?.classList.toggle('open')">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-text">
+            <div class="hero-badge">
+                <i class="fas fa-award"></i> Trusted Healthcare Since 1985
+            </div>
+            <h1>Your Health Is Our <em>Greatest Priority</em></h1>
+            <p>Experience world-class medical care with compassionate doctors, advanced technology, and personalized treatment at MediCare General Hospital.</p>
+            <div class="hero-buttons">
+                <a href="/appointments.html" class="btn btn-accent btn-lg">
+                    <i class="fas fa-calendar-plus"></i> Book Appointment
+                </a>
+                <a href="/doctors.html" class="btn btn-outline-white btn-lg">
+                    <i class="fas fa-user-md"></i> Our Doctors
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat"><div class="number" id="hero-patients">100K+</div><div class="label">Patients Served</div></div>
+                <div class="hero-stat"><div class="number" id="hero-doctors">150+</div><div class="label">Expert Doctors</div></div>
+                <div class="hero-stat"><div class="number" id="hero-beds">500+</div><div class="label">Hospital Beds</div></div>
+            </div>
+        </div>
+        <div class="hero-image-wrapper">
+            <div class="hero-card">
+                <h3 style="font-size:20px;margin-bottom:8px;">Complete Healthcare</h3>
+                <p style="font-size:14px;opacity:.8;margin-bottom:0;">All specialties under one roof</p>
+                <div class="hero-icon-grid">
+                    <div class="hero-icon-item"><i class="fas fa-heart"></i><span>Cardiology</span></div>
+                    <div class="hero-icon-item"><i class="fas fa-brain"></i><span>Neurology</span></div>
+                    <div class="hero-icon-item"><i class="fas fa-bone"></i><span>Orthopedics</span></div>
+                    <div class="hero-icon-item"><i class="fas fa-child"></i><span>Pediatrics</span></div>
+                    <div class="hero-icon-item"><i class="fas fa-ribbon"></i><span>Oncology</span></div>
+                    <div class="hero-icon-item"><i class="fas fa-ambulance"></i><span>Emergency</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Departments -->
+<section class="bg-light">
+    <div class="container text-center">
+        <p class="section-eyebrow">Medical Specialties</p>
+        <h2 class="section-title">Our Departments</h2>
+        <p class="section-subtitle">We offer comprehensive medical services across all major specialties with expert doctors and modern facilities.</p>
+        <div class="departments-grid" id="departments-grid">
+            <div class="loading"><div class="spinner"></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section>
+    <div class="container text-center">
+        <p class="section-eyebrow">Why MediCare</p>
+        <h2 class="section-title">Why Choose Us</h2>
+        <p class="section-subtitle">We combine medical excellence with compassionate care to deliver the best healthcare experience.</p>
+        <div class="why-us-grid">
+            <div class="why-card"><div class="why-icon"><i class="fas fa-user-md"></i></div><h3>Expert Doctors</h3><p>150+ specialist doctors with international training and experience</p></div>
+            <div class="why-card"><div class="why-icon"><i class="fas fa-microscope"></i></div><h3>Advanced Technology</h3><p>State-of-the-art equipment and modern diagnostic facilities</p></div>
+            <div class="why-card"><div class="why-icon"><i class="fas fa-clock"></i></div><h3>24/7 Emergency</h3><p>Round-the-clock emergency services with rapid response team</p></div>
+            <div class="why-card"><div class="why-icon"><i class="fas fa-shield-alt"></i></div><h3>Patient Safety</h3><p>Highest standards of hygiene, safety, and infection control</p></div>
+            <div class="why-card"><div class="why-icon"><i class="fas fa-hand-holding-heart"></i></div><h3>Compassionate Care</h3><p>Patient-centered approach with empathy and personal attention</p></div>
+            <div class="why-card"><div class="why-icon"><i class="fas fa-money-bill-wave"></i></div><h3>Affordable Prices</h3><p>Quality healthcare at transparent and affordable costs</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Doctors -->
+<section class="bg-light">
+    <div class="container text-center">
+        <p class="section-eyebrow">Medical Team</p>
+        <h2 class="section-title">Our Expert Doctors</h2>
+        <p class="section-subtitle">Meet our team of dedicated and experienced medical professionals committed to your wellbeing.</p>
+        <div class="doctors-grid" id="doctors-grid">
+            <div class="loading"><div class="spinner"></div></div>
+        </div>
+        <div class="mt-3">
+            <a href="/doctors.html" class="btn btn-primary btn-lg">View All Doctors <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- Services -->
+<section>
+    <div class="container text-center">
+        <p class="section-eyebrow">What We Offer</p>
+        <h2 class="section-title">Our Services</h2>
+        <p class="section-subtitle">Comprehensive medical services with cutting-edge technology to ensure the best outcomes for our patients.</p>
+        <div class="services-grid" id="services-grid">
+            <div class="loading"><div class="spinner"></div></div>
+        </div>
+        <div class="mt-3">
+            <a href="/services.html" class="btn btn-primary btn-lg">All Services <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- Appointment CTA -->
+<section class="bg-light">
+    <div class="container">
+        <div class="appointment-cta">
+            <h2>Ready to Book an Appointment?</h2>
+            <p>Schedule your consultation with our specialist doctors online in just a few clicks.</p>
+            <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+                <a href="/appointments.html" class="btn btn-accent btn-lg"><i class="fas fa-calendar-plus"></i> Book Now</a>
+                <a href="/contact.html" class="btn btn-outline-white btn-lg"><i class="fas fa-phone"></i> Call Us</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- News -->
+<section>
+    <div class="container text-center">
+        <p class="section-eyebrow">Updates</p>
+        <h2 class="section-title">Latest News & Events</h2>
+        <p class="section-subtitle">Stay informed about the latest healthcare news, hospital events, and health tips.</p>
+        <div class="news-grid" id="news-grid">
+            <div class="loading"><div class="spinner"></div></div>
+        </div>
+        <div class="mt-3"><a href="/news.html" class="btn btn-primary btn-lg">Read All News <i class="fas fa-arrow-right"></i></a></div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="bg-light">
+    <div class="container text-center">
+        <p class="section-eyebrow">Patient Stories</p>
+        <h2 class="section-title">What Our Patients Say</h2>
+        <p class="section-subtitle">Real stories from real patients about their experience at MediCare Hospital.</p>
+        <div class="testimonials-grid" id="testimonials-grid">
+            <div class="loading"><div class="spinner"></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-brand">MediCare <span>Hospital</span></div>
+                <p>Committed to providing exceptional healthcare with compassion, innovation, and expertise since 1985.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="/about.html"><i class="fas fa-chevron-right" style="font-size:10px;margin-right:6px;color:var(--secondary)"></i> About Us</a></li>
+                    <li><a href="/doctors.html"><i class="fas fa-chevron-right" style="font-size:10px;margin-right:6px;color:var(--secondary)"></i> Our Doctors</a></li>
+                    <li><a href="/services.html"><i class="fas fa-chevron-right" style="font-size:10px;margin-right:6px;color:var(--secondary)"></i> Services</a></li>
+                    <li><a href="/appointments.html"><i class="fas fa-chevron-right" style="font-size:10px;margin-right:6px;color:var(--secondary)"></i> Appointments</a></li>
+                    <li><a href="/news.html"><i class="fas fa-chevron-right" style="font-size:10px;margin-right:6px;color:var(--secondary)"></i> News</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Departments</h4>
+                <ul class="footer-links" id="footer-depts"></ul>
+            </div>
+            <div>
+                <h4>Contact Us</h4>
+                <ul class="footer-links">
+                    <li style="color:rgba(255,255,255,.65);font-size:14px;margin-bottom:10px;"><i class="fas fa-map-marker-alt" style="color:var(--secondary);margin-right:8px;"></i> 123 Medical Road, Dhaka-1205</li>
+                    <li style="color:rgba(255,255,255,.65);font-size:14px;margin-bottom:10px;"><i class="fas fa-phone" style="color:var(--secondary);margin-right:8px;"></i> +880 1700-000000</li>
+                    <li style="color:rgba(255,255,255,.65);font-size:14px;margin-bottom:10px;"><i class="fas fa-envelope" style="color:var(--secondary);margin-right:8px;"></i> info@medicare-hospital.com</li>
+                    <li style="color:rgba(255,255,255,.65);font-size:14px;"><i class="fas fa-clock" style="color:var(--secondary);margin-right:8px;"></i> Mon-Sat: 8:00 AM - 8:00 PM</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container">
+            <p>&copy; 2024 MediCare General Hospital. All Rights Reserved. | Designed for better healthcare.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="/js/main.js"></script>
+<script>
+async function loadHomepage() {
+    // Load departments
+    const depts = await apiGet('/departments');
+    const deptsGrid = document.getElementById('departments-grid');
+    if (depts.success && depts.data.length) {
+        const footerDepts = document.getElementById('footer-depts');
+        deptsGrid.innerHTML = depts.data.map(d => `
+            <div class="dept-card" onclick="window.location.href='/doctors.html?dept=${d.id}'">
+                <div class="dept-icon"><i class="fas ${d.icon || 'fa-hospital'}"></i></div>
+                <h3>${d.name}</h3>
+                <p>${d.description || 'Expert medical care'}</p>
+                <span class="dept-count">${d.doctor_count || 0} Doctors</span>
+            </div>
+        `).join('');
+        if (footerDepts) footerDepts.innerHTML = depts.data.slice(0, 5).map(d => `<li><a href="/doctors.html?dept=${d.id}"><i class="fas fa-chevron-right" style="font-size:10px;margin-right:6px;color:var(--secondary)"></i> ${d.name}</a></li>`).join('');
+    } else {
+        deptsGrid.innerHTML = '<p class="text-center" style="color:var(--gray-400)">No departments found.</p>';
+    }
+
+    // Load doctors (first 4)
+    const docs = await apiGet('/doctors');
+    const docsGrid = document.getElementById('doctors-grid');
+    if (docs.success && docs.data.length) {
+        docsGrid.innerHTML = docs.data.slice(0, 4).map(d => `
+            <div class="doctor-card">
+                <div class="doctor-image">
+                    ${d.profile_image ? `<img src="${d.profile_image}" alt="${d.full_name}">` : `<i class="fas fa-user-md placeholder-icon"></i>`}
+                    <span class="doctor-badge">Available</span>
+                </div>
+                <div class="doctor-info">
+                    <h3>${d.full_name}</h3>
+                    <div class="specialty">${d.specialization}</div>
+                    <span class="dept-tag">${d.department_name || 'General'}</span>
+                    <div class="doctor-meta">
+                        <span><i class="fas fa-graduation-cap"></i> ${d.qualification}</span>
+                        <span><i class="fas fa-briefcase"></i> ${d.experience_years} yrs</span>
+                    </div>
+                    <div class="doctor-footer">
+                        <div class="doc-fee">${formatCurrency(d.consultation_fee)} <span>/ visit</span></div>
+                        <a href="/appointments.html?doctor=${d.id}" class="btn btn-primary btn-sm">Book</a>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        docsGrid.innerHTML = '<p>No doctors found.</p>';
+    }
+
+    // Load services (first 6)
+    const svcs = await apiGet('/services');
+    const svcsGrid = document.getElementById('services-grid');
+    if (svcs.success && svcs.data.length) {
+        svcsGrid.innerHTML = svcs.data.slice(0, 6).map(s => `
+            <div class="service-card">
+                <div class="service-icon"><i class="fas ${s.icon || 'fa-stethoscope'}"></i></div>
+                <div class="service-info">
+                    <h3>${s.name}</h3>
+                    <p>${s.description || ''}</p>
+                    <div class="service-price">${formatCurrency(s.price)}</div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        svcsGrid.innerHTML = '<p>No services available.</p>';
+    }
+
+    // Load news (3)
+    const news = await apiGet('/news');
+    const newsGrid = document.getElementById('news-grid');
+    if (news.success && news.data.length) {
+        newsGrid.innerHTML = news.data.slice(0, 3).map(n => `
+            <div class="news-card">
+                <div class="news-img">${n.image ? `<img src="${n.image}" alt="${n.title}">` : '<i class="fas fa-newspaper"></i>'}</div>
+                <div class="news-body">
+                    <div class="news-category">${n.category || 'News'}</div>
+                    <h3>${n.title}</h3>
+                    <p>${n.excerpt || ''}</p>
+                    <div class="news-meta">
+                        <span><i class="fas fa-calendar"></i> ${formatDate(n.created_at)}</span>
+                        <span><i class="fas fa-user"></i> ${n.author_name || 'Admin'}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        newsGrid.innerHTML = '<p>No news available.</p>';
+    }
+
+    // Load testimonials
+    const testi = await apiGet('/testimonials?approved=1');
+    const testiGrid = document.getElementById('testimonials-grid');
+    if (testi.success && testi.data.length) {
+        testiGrid.innerHTML = testi.data.map(t => `
+            <div class="testimonial-card">
+                <div class="testimonial-quote">"</div>
+                <div class="testimonial-text">${t.content}</div>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">${getInitials(t.patient_name)}</div>
+                    <div>
+                        <div class="testimonial-name">${t.patient_name}</div>
+                        <div class="stars">${renderStars(t.rating)}</div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        testiGrid.innerHTML = '<p>No testimonials yet.</p>';
+    }
+
+    // Load hospital stats
+    const info = await apiGet('/hospital-info');
+    if (info.success) {
+        const d = info.data;
+        if (d.patients_served) document.getElementById('hero-patients').textContent = parseInt(d.patients_served).toLocaleString() + '+';
+        if (d.doctors_count) document.getElementById('hero-doctors').textContent = d.doctors_count + '+';
+        if (d.beds_count) document.getElementById('hero-beds').textContent = d.beds_count + '+';
+    }
+}
+
+loadHomepage();
+</script>
+</body>
+</html>

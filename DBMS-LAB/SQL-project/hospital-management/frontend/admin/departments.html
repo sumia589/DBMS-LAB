@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Departments - Admin</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/admin.css"></head>
+<body><div class="admin-layout">
+<aside class="sidebar" id="sidebar"><a href="/" class="sidebar-brand"><div class="brand-icon"><i class="fas fa-plus"></i></div><div><h2>MediCare</h2><p>Admin Panel</p></div></a><nav class="sidebar-nav"><div class="nav-section-title">Main</div><a href="/admin/dashboard.html" class="sidebar-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a><div class="nav-section-title">Management</div><a href="/admin/doctors.html" class="sidebar-link"><i class="fas fa-user-md"></i> Doctors</a><a href="/admin/patients.html" class="sidebar-link"><i class="fas fa-users"></i> Patients</a><a href="/admin/appointments.html" class="sidebar-link"><i class="fas fa-calendar-check"></i> Appointments</a><a href="/admin/departments.html" class="sidebar-link active"><i class="fas fa-hospital"></i> Departments</a><a href="/admin/services.html" class="sidebar-link"><i class="fas fa-stethoscope"></i> Services</a><a href="/admin/records.html" class="sidebar-link"><i class="fas fa-file-medical"></i> Medical Records</a><div class="nav-section-title">Content</div><a href="/admin/news.html" class="sidebar-link"><i class="fas fa-newspaper"></i> News</a><a href="/admin/testimonials.html" class="sidebar-link"><i class="fas fa-star"></i> Testimonials</a><a href="/admin/messages.html" class="sidebar-link"><i class="fas fa-envelope"></i> Messages</a><div class="nav-section-title">Settings</div><a href="/admin/settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Settings</a></nav>
+<div class="sidebar-footer"><div class="admin-user"><div class="admin-avatar" id="admin-initials">A</div><div class="admin-user-info"><div class="name" id="admin-name">Admin</div><div class="role">Administrator</div></div></div><button onclick="logout()" class="sidebar-link" style="width:100%;border:none;cursor:pointer;background:rgba(255,0,0,.1);color:#f87171;"><i class="fas fa-sign-out-alt"></i> Logout</button></div></aside>
+<div class="main-content"><div class="topbar"><div style="display:flex;align-items:center;gap:14px;"><button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button><div class="topbar-left"><h1>Departments</h1><p>Manage hospital departments</p></div></div><button class="btn btn-primary btn-sm" onclick="openModal('dept-modal')"><i class="fas fa-plus"></i> Add Department</button></div>
+<div class="page-content">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;" id="depts-grid"><div class="loading"><div class="spinner"></div></div></div>
+</div></div></div>
+
+<div class="modal-overlay" id="dept-modal"><div class="modal"><div class="modal-header"><h2 id="dept-modal-title">Add Department</h2><button class="modal-close" onclick="closeModal('dept-modal')"><i class="fas fa-times"></i></button></div>
+<div class="modal-body"><input type="hidden" id="dept-id">
+<div class="form-group"><label class="form-label">Name *</label><input type="text" id="dept-name" class="form-control" placeholder="e.g. Cardiology"></div>
+<div class="form-group"><label class="form-label">Description</label><textarea id="dept-desc" class="form-control" placeholder="Department description..."></textarea></div>
+<div class="form-group"><label class="form-label">Icon (FontAwesome class)</label><input type="text" id="dept-icon" class="form-control" value="fa-hospital" placeholder="fa-heart"></div>
+</div>
+<div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal('dept-modal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="saveDept()"><i class="fas fa-save"></i> Save</button></div>
+</div></div>
+
+<script src="/js/main.js"></script>
+<script>
+let depts=[];
+async function init(){const user=await checkAuth('admin');if(!user)return;document.getElementById('admin-name').textContent=user.full_name;document.getElementById('admin-initials').textContent=getInitials(user.full_name);load();}
+async function load(){const res=await apiGet('/departments');depts=res.data||[];const grid=document.getElementById('depts-grid');
+grid.innerHTML=depts.map(d=>`<div class="data-card" style="padding:24px;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+<div style="display:flex;align-items:center;gap:12px;"><div style="width:48px;height:48px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;"><i class="fas ${d.icon||'fa-hospital'}"></i></div><div><div style="font-weight:700;font-size:15px;">${d.name}</div><div style="font-size:12px;color:var(--gray-400);">${d.doctor_count||0} doctors</div></div></div>
+<div style="display:flex;gap:6px;"><button class="action-btn edit" onclick="editDept(${d.id})"><i class="fas fa-edit"></i></button><button class="action-btn delete" onclick="delDept(${d.id},'${d.name}')"><i class="fas fa-trash"></i></button></div></div>
+<p style="font-size:13px;color:var(--gray-500);">${d.description||'No description'}</p>
+<span class="badge ${d.is_active?'badge-success':'badge-danger'}" style="margin-top:12px;">${d.is_active?'Active':'Inactive'}</span>
+</div>`).join('')||'<p style="text-align:center;color:var(--gray-400);padding:40px;">No departments found</p>';}
+function editDept(id){const d=depts.find(x=>x.id==id);if(!d)return;document.getElementById('dept-modal-title').textContent='Edit Department';document.getElementById('dept-id').value=d.id;document.getElementById('dept-name').value=d.name;document.getElementById('dept-desc').value=d.description||'';document.getElementById('dept-icon').value=d.icon||'fa-hospital';openModal('dept-modal');}
+async function saveDept(){const id=document.getElementById('dept-id').value;const data={name:document.getElementById('dept-name').value,description:document.getElementById('dept-desc').value,icon:document.getElementById('dept-icon').value};
+const res=id?await apiPut(`/admin/departments/${id}`,data):await apiPost('/admin/departments',data);
+if(res.success){showToast(res.message,'success');closeModal('dept-modal');document.getElementById('dept-id').value='';document.getElementById('dept-modal-title').textContent='Add Department';load();}else showToast(res.message,'error');}
+async function delDept(id,name){if(!confirm(`Delete ${name}?`))return;const res=await apiDelete(`/admin/departments/${id}`);if(res.success){showToast(res.message,'success');load();}else showToast(res.message,'error');}
+init();
+</script></body></html>

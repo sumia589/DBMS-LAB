@@ -1,0 +1,22 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Messages - Admin</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/admin.css"></head>
+<body><div class="admin-layout">
+<aside class="sidebar" id="sidebar"><a href="/" class="sidebar-brand"><div class="brand-icon"><i class="fas fa-plus"></i></div><div><h2>MediCare</h2><p>Admin Panel</p></div></a><nav class="sidebar-nav"><a href="/admin/dashboard.html" class="sidebar-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a><div class="nav-section-title">Management</div><a href="/admin/doctors.html" class="sidebar-link"><i class="fas fa-user-md"></i> Doctors</a><a href="/admin/patients.html" class="sidebar-link"><i class="fas fa-users"></i> Patients</a><a href="/admin/appointments.html" class="sidebar-link"><i class="fas fa-calendar-check"></i> Appointments</a><a href="/admin/departments.html" class="sidebar-link"><i class="fas fa-hospital"></i> Departments</a><a href="/admin/services.html" class="sidebar-link"><i class="fas fa-stethoscope"></i> Services</a><a href="/admin/records.html" class="sidebar-link"><i class="fas fa-file-medical"></i> Medical Records</a><div class="nav-section-title">Content</div><a href="/admin/news.html" class="sidebar-link"><i class="fas fa-newspaper"></i> News</a><a href="/admin/testimonials.html" class="sidebar-link"><i class="fas fa-star"></i> Testimonials</a><a href="/admin/messages.html" class="sidebar-link active"><i class="fas fa-envelope"></i> Messages</a><div class="nav-section-title">Settings</div><a href="/admin/settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Settings</a></nav>
+<div class="sidebar-footer"><div class="admin-user"><div class="admin-avatar" id="admin-initials">A</div><div class="admin-user-info"><div class="name" id="admin-name">Admin</div><div class="role">Administrator</div></div></div><button onclick="logout()" class="sidebar-link" style="width:100%;border:none;cursor:pointer;background:rgba(255,0,0,.1);color:#f87171;"><i class="fas fa-sign-out-alt"></i> Logout</button></div></aside>
+<div class="main-content"><div class="topbar"><div style="display:flex;align-items:center;gap:14px;"><button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button><div class="topbar-left"><h1>Contact Messages</h1><p>Messages from website visitors</p></div></div></div>
+<div class="page-content"><div class="data-card"><div class="table-wrapper"><table><thead><tr><th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="msg-table"><tr><td colspan="7" class="text-center"><div class="loading"><div class="spinner"></div></div></td></tr></tbody></table></div></div></div></div></div>
+<script src="/js/main.js"></script>
+<script>
+async function init(){const user=await checkAuth('admin');if(!user)return;document.getElementById('admin-name').textContent=user.full_name;document.getElementById('admin-initials').textContent=getInitials(user.full_name);load();}
+async function load(){const res=await apiGet('/admin/messages');const msgs=res.data||[];const tb=document.getElementById('msg-table');
+tb.innerHTML=msgs.length?msgs.map(m=>`<tr style="background:${m.is_read?'':'#fefce8'}">
+<td style="font-weight:${m.is_read?'400':'600'};font-size:14px;">${m.name}</td>
+<td style="font-size:13px;"><a href="mailto:${m.email}" style="color:var(--primary);">${m.email}</a></td>
+<td style="font-size:13px;">${m.subject||'—'}</td>
+<td style="font-size:13px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.message}</td>
+<td style="font-size:12px;">${formatDate(m.created_at)}</td>
+<td><span class="badge ${m.is_read?'badge-success':'badge-warning'}">${m.is_read?'Read':'Unread'}</span></td>
+<td>${!m.is_read?`<button class="action-btn approve" onclick="markRead(${m.id})" title="Mark Read"><i class="fas fa-check"></i></button>`:''}</td>
+</tr>`).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--gray-400);padding:40px;">No messages</td></tr>';}
+async function markRead(id){const res=await apiPut(`/admin/messages/${id}/read`,{});if(res.success){showToast('Marked as read','success');load();}else showToast(res.message,'error');}
+init();
+</script></body></html>

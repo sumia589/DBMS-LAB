@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Services - MediCare Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<nav class="navbar"><div class="navbar-inner">
+    <a href="/" class="navbar-brand"><div class="brand-icon"><i class="fas fa-plus"></i></div>MediCare<span class="brand-plus"> Hospital</span></a>
+    <ul class="nav-links"><li><a href="/">Home</a></li><li><a href="/about.html">About</a></li><li><a href="/doctors.html">Doctors</a></li><li><a href="/services.html" class="active">Services</a></li><li><a href="/appointments.html">Appointments</a></li><li><a href="/news.html">News</a></li><li><a href="/contact.html">Contact</a></li></ul>
+    <div class="nav-actions"></div>
+    <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></div>
+</div></nav>
+
+<div class="page-header">
+    <div class="container"><h1>Our Services</h1><p>Comprehensive medical care, all under one roof</p><div class="breadcrumb"><a href="/">Home</a><span>/</span>Services</div></div>
+</div>
+
+<section>
+    <div class="container">
+        <div class="services-grid" id="services-grid"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+</section>
+
+<section class="bg-light">
+    <div class="container text-center">
+        <h2 class="section-title">Need Medical Assistance?</h2>
+        <p class="section-subtitle">Book an appointment with our specialists today.</p>
+        <a href="/appointments.html" class="btn btn-primary btn-lg"><i class="fas fa-calendar-plus"></i> Book Appointment</a>
+    </div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-bottom" style="border:none;padding:30px 0;"><p>&copy; 2024 MediCare General Hospital. All Rights Reserved.</p></div></div></footer>
+
+<script src="/js/main.js"></script>
+<script>
+async function init() {
+    const res = await apiGet('/services');
+    const grid = document.getElementById('services-grid');
+    const services = res.data || [];
+    grid.innerHTML = services.length ? services.map(s => `
+        <div class="service-card">
+            <div class="service-icon"><i class="fas ${s.icon || 'fa-stethoscope'}"></i></div>
+            <div class="service-info">
+                <h3>${s.name}</h3>
+                <p>${s.description || ''}</p>
+                <div class="service-price">${formatCurrency(s.price)}${s.duration_minutes ? ` <span style="font-size:11px;color:var(--gray-400);font-weight:400;">(${s.duration_minutes} min)</span>` : ''}</div>
+            </div>
+        </div>
+    `).join('') : '<p style="text-align:center;color:var(--gray-400);grid-column:1/-1;padding:60px;">No services available right now.</p>';
+}
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MediCare Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <a href="/" class="sidebar-brand">
+        <div class="brand-icon"><i class="fas fa-plus"></i></div>
+        <div><h2>MediCare</h2><p>Admin Panel</p></div>
+    </a>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Main</div>
+        <a href="/admin/dashboard.html" class="sidebar-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <div class="nav-section-title">Management</div>
+        <a href="/admin/doctors.html" class="sidebar-link"><i class="fas fa-user-md"></i> Doctors</a>
+        <a href="/admin/patients.html" class="sidebar-link"><i class="fas fa-users"></i> Patients</a>
+        <a href="/admin/appointments.html" class="sidebar-link"><i class="fas fa-calendar-check"></i> Appointments</a>
+        <a href="/admin/departments.html" class="sidebar-link"><i class="fas fa-hospital"></i> Departments</a>
+        <a href="/admin/services.html" class="sidebar-link"><i class="fas fa-stethoscope"></i> Services</a>
+        <a href="/admin/records.html" class="sidebar-link"><i class="fas fa-file-medical"></i> Medical Records</a>
+        <div class="nav-section-title">Content</div>
+        <a href="/admin/news.html" class="sidebar-link"><i class="fas fa-newspaper"></i> News & Events</a>
+        <a href="/admin/testimonials.html" class="sidebar-link"><i class="fas fa-star"></i> Testimonials</a>
+        <a href="/admin/messages.html" class="sidebar-link"><i class="fas fa-envelope"></i> Messages <span class="badge-dot"></span></a>
+        <div class="nav-section-title">Settings</div>
+        <a href="/admin/settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Hospital Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="admin-user">
+            <div class="admin-avatar" id="admin-initials">A</div>
+            <div class="admin-user-info">
+                <div class="name" id="admin-name">Admin</div>
+                <div class="role">Administrator</div>
+            </div>
+        </div>
+        <button onclick="logout()" class="sidebar-link" style="width:100%;border:none;cursor:pointer;background:rgba(255,0,0,.1);color:#f87171;">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+</aside>
+
+<!-- Main -->
+<div class="main-content">
+    <div class="topbar">
+        <div style="display:flex;align-items:center;gap:14px;">
+            <button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+            <div class="topbar-left">
+                <h1>Dashboard</h1>
+                <p id="today-date">Loading...</p>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-icon"><i class="fas fa-bell"></i><span class="notif-count" id="notif-count">0</span></div>
+            <a href="/" target="_blank" class="topbar-icon" title="View Website"><i class="fas fa-external-link-alt"></i></a>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <!-- Stats -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="loading"><div class="spinner"></div></div>
+        </div>
+
+        <!-- Charts & Recent -->
+        <div class="content-grid-2">
+            <div class="data-card">
+                <div class="data-card-header">
+                    <div><h3>Recent Appointments</h3><p>Latest bookings</p></div>
+                    <a href="/admin/appointments.html" class="btn btn-outline btn-sm">View All</a>
+                </div>
+                <div class="data-card-body" id="recent-appointments">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+
+            <div class="data-card">
+                <div class="data-card-header">
+                    <div><h3>Quick Actions</h3><p>Common tasks</p></div>
+                </div>
+                <div class="data-card-body">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <a href="/admin/doctors.html" class="btn btn-primary btn-sm" style="justify-content:center;"><i class="fas fa-plus"></i> Add Doctor</a>
+                        <a href="/admin/appointments.html" class="btn btn-secondary btn-sm" style="justify-content:center;"><i class="fas fa-calendar"></i> Appointments</a>
+                        <a href="/admin/patients.html" class="btn btn-outline btn-sm" style="justify-content:center;"><i class="fas fa-users"></i> Patients</a>
+                        <a href="/admin/news.html" class="btn btn-outline btn-sm" style="justify-content:center;"><i class="fas fa-newspaper"></i> Add News</a>
+                        <a href="/admin/departments.html" class="btn btn-outline btn-sm" style="justify-content:center;"><i class="fas fa-hospital"></i> Departments</a>
+                        <a href="/admin/settings.html" class="btn btn-outline btn-sm" style="justify-content:center;"><i class="fas fa-cog"></i> Settings</a>
+                    </div>
+                    <hr style="border:none;border-top:1px solid var(--gray-100);margin:20px 0;">
+                    <div class="data-card-header" style="padding:0;border:none;margin-bottom:12px;">
+                        <div><h3 style="font-size:14px;">Today's Summary</h3></div>
+                    </div>
+                    <div id="today-summary" style="display:flex;flex-direction:column;gap:10px;">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Stats -->
+        <div class="data-card" style="margin-top:20px;">
+            <div class="data-card-header">
+                <div><h3>Appointment Overview</h3><p>Last 6 months</p></div>
+            </div>
+            <div class="data-card-body">
+                <div id="monthly-chart" style="display:flex;align-items:flex-end;gap:12px;height:160px;padding-bottom:8px;">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="/js/main.js"></script>
+<script>
+async function loadDashboard() {
+    const user = await checkAuth('admin');
+    if (!user) return;
+    document.getElementById('admin-name').textContent = user.full_name;
+    document.getElementById('admin-initials').textContent = getInitials(user.full_name);
+    document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-BD', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+    const res = await apiGet('/admin/dashboard');
+    if (!res.success) return;
+    const d = res.data;
+
+    // Stats
+    document.getElementById('notif-count').textContent = d.pending_appointments || 0;
+    document.getElementById('stats-grid').innerHTML = `
+        <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-users"></i></div><div class="stat-info"><div class="number">${d.total_patients}</div><div class="label">Total Patients</div></div></div>
+        <div class="stat-card"><div class="stat-icon green"><i class="fas fa-user-md"></i></div><div class="stat-info"><div class="number">${d.total_doctors}</div><div class="label">Active Doctors</div></div></div>
+        <div class="stat-card"><div class="stat-icon orange"><i class="fas fa-calendar-check"></i></div><div class="stat-info"><div class="number">${d.total_appointments}</div><div class="label">Total Appointments</div></div></div>
+        <div class="stat-card"><div class="stat-icon pink"><i class="fas fa-calendar-day"></i></div><div class="stat-info"><div class="number">${d.today_appointments}</div><div class="label">Today's Appointments</div></div></div>
+        <div class="stat-card"><div class="stat-icon purple"><i class="fas fa-clock"></i></div><div class="stat-info"><div class="number">${d.pending_appointments}</div><div class="label">Pending</div></div></div>
+        <div class="stat-card"><div class="stat-icon teal"><i class="fas fa-hospital"></i></div><div class="stat-info"><div class="number">${d.total_departments}</div><div class="label">Departments</div></div></div>
+    `;
+
+    // Recent appointments
+    document.getElementById('recent-appointments').innerHTML = d.recent_appointments.length ? d.recent_appointments.map(a => `
+        <div class="recent-item">
+            <div class="recent-avatar">${getInitials(a.patient_name)}</div>
+            <div class="recent-info">
+                <div class="name">${a.patient_name}</div>
+                <div class="meta"><i class="fas fa-user-md"></i> ${a.doctor_name} &bull; ${formatDate(a.appointment_date)} ${formatTime(a.appointment_time)}</div>
+            </div>
+            <div class="recent-status">${getStatusBadge(a.status)}</div>
+        </div>
+    `).join('') : '<p style="color:var(--gray-400);text-align:center;padding:20px;">No appointments yet</p>';
+
+    // Today summary
+    document.getElementById('today-summary').innerHTML = `
+        <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:var(--gray-500);">Today's Appointments</span><strong>${d.today_appointments}</strong></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:var(--gray-500);">Pending Approval</span><strong style="color:var(--warning);">${d.pending_appointments}</strong></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:var(--gray-500);">Total Doctors</span><strong>${d.total_doctors}</strong></div>
+    `;
+
+    // Monthly chart
+    if (d.monthly_stats && d.monthly_stats.length) {
+        const max = Math.max(...d.monthly_stats.map(m => m.count));
+        document.getElementById('monthly-chart').innerHTML = d.monthly_stats.map(m => `
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;">
+                <span style="font-size:12px;font-weight:600;color:var(--dark);">${m.count}</span>
+                <div style="width:100%;background:linear-gradient(to top,var(--primary),var(--secondary));border-radius:6px 6px 0 0;height:${Math.max(20, (m.count/max)*120)}px;transition:.3s;"></div>
+                <span style="font-size:12px;color:var(--gray-400);">${m.month}</span>
+            </div>
+        `).join('');
+    } else {
+        document.getElementById('monthly-chart').innerHTML = '<p style="color:var(--gray-400);margin:auto;">No data available</p>';
+    }
+}
+loadDashboard();
+</script>
+</body>
+</html>

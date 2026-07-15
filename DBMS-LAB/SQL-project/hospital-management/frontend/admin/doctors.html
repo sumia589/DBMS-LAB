@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctors - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+<aside class="sidebar" id="sidebar">
+    <a href="/" class="sidebar-brand"><div class="brand-icon"><i class="fas fa-plus"></i></div><div><h2>MediCare</h2><p>Admin Panel</p></div></a>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Main</div>
+        <a href="/admin/dashboard.html" class="sidebar-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <div class="nav-section-title">Management</div>
+        <a href="/admin/doctors.html" class="sidebar-link active"><i class="fas fa-user-md"></i> Doctors</a>
+        <a href="/admin/patients.html" class="sidebar-link"><i class="fas fa-users"></i> Patients</a>
+        <a href="/admin/appointments.html" class="sidebar-link"><i class="fas fa-calendar-check"></i> Appointments</a>
+        <a href="/admin/departments.html" class="sidebar-link"><i class="fas fa-hospital"></i> Departments</a>
+        <a href="/admin/services.html" class="sidebar-link"><i class="fas fa-stethoscope"></i> Services</a>
+        <a href="/admin/records.html" class="sidebar-link"><i class="fas fa-file-medical"></i> Medical Records</a>
+        <div class="nav-section-title">Content</div>
+        <a href="/admin/news.html" class="sidebar-link"><i class="fas fa-newspaper"></i> News & Events</a>
+        <a href="/admin/testimonials.html" class="sidebar-link"><i class="fas fa-star"></i> Testimonials</a>
+        <a href="/admin/messages.html" class="sidebar-link"><i class="fas fa-envelope"></i> Messages</a>
+        <div class="nav-section-title">Settings</div>
+        <a href="/admin/settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Hospital Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="admin-user"><div class="admin-avatar" id="admin-initials">A</div><div class="admin-user-info"><div class="name" id="admin-name">Admin</div><div class="role">Administrator</div></div></div>
+        <button onclick="logout()" class="sidebar-link" style="width:100%;border:none;cursor:pointer;background:rgba(255,0,0,.1);color:#f87171;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+</aside>
+<div class="main-content">
+    <div class="topbar">
+        <div style="display:flex;align-items:center;gap:14px;">
+            <button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+            <div class="topbar-left"><h1>Doctors</h1><p>Manage hospital doctors</p></div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('add-doctor-modal')"><i class="fas fa-plus"></i> Add Doctor</button>
+    </div>
+    <div class="page-content">
+        <div class="filters-bar">
+            <div class="search-input"><i class="fas fa-search"></i><input type="text" placeholder="Search doctors..." oninput="filterDoctors(this.value)" id="search-input"></div>
+            <select class="filter-select" onchange="filterByDept(this.value)" id="dept-filter"><option value="">All Departments</option></select>
+        </div>
+        <div class="data-card">
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Doctor</th><th>Specialization</th><th>Department</th><th>Experience</th><th>Fee</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="doctors-table"><tr><td colspan="7" class="text-center"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Add/Edit Doctor Modal -->
+<div class="modal-overlay" id="add-doctor-modal">
+<div class="modal" style="max-width:640px;">
+    <div class="modal-header">
+        <h2 id="modal-title">Add New Doctor</h2>
+        <button class="modal-close" onclick="closeModal('add-doctor-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+        <input type="hidden" id="doctor-id">
+        <div class="form-row">
+            <div class="form-group"><label class="form-label">Full Name *</label><input type="text" id="doc-name" class="form-control" placeholder="Dr. John Doe" required></div>
+            <div class="form-group"><label class="form-label">Email *</label><input type="email" id="doc-email" class="form-control" placeholder="doctor@hospital.com"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label class="form-label">Phone</label><input type="tel" id="doc-phone" class="form-control" placeholder="01XXXXXXXXX"></div>
+            <div class="form-group"><label class="form-label">Department</label><select id="doc-dept" class="form-control"><option value="">Select department</option></select></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label class="form-label">Specialization *</label><input type="text" id="doc-spec" class="form-control" placeholder="Cardiologist"></div>
+            <div class="form-group"><label class="form-label">Qualification</label><input type="text" id="doc-qual" class="form-control" placeholder="MBBS, MD"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label class="form-label">Experience (years)</label><input type="number" id="doc-exp" class="form-control" placeholder="5" min="0"></div>
+            <div class="form-group"><label class="form-label">Consultation Fee (৳)</label><input type="number" id="doc-fee" class="form-control" placeholder="1000" min="0"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label class="form-label">Available Days</label><input type="text" id="doc-days" class="form-control" value="Mon,Tue,Wed,Thu,Fri" placeholder="Mon,Tue,Wed"></div>
+            <div class="form-group"><label class="form-label">Time Slot</label>
+                <div style="display:flex;gap:6px;align-items:center;">
+                    <input type="time" id="doc-time-start" class="form-control" value="09:00">
+                    <span>to</span>
+                    <input type="time" id="doc-time-end" class="form-control" value="17:00">
+                </div>
+            </div>
+        </div>
+        <div class="form-group"><label class="form-label">Bio</label><textarea id="doc-bio" class="form-control" placeholder="Doctor's background and expertise..."></textarea></div>
+        <div class="form-group"><label class="form-label">Profile Photo</label><input type="file" id="doc-photo" class="form-control" accept="image/*"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-outline btn-sm" onclick="closeModal('add-doctor-modal')">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="saveDoctor()" id="save-btn"><i class="fas fa-save"></i> Save Doctor</button>
+    </div>
+</div>
+</div>
+
+<script src="/js/main.js"></script>
+<script>
+let allDoctors = [], departments = [];
+
+async function init() {
+    const user = await checkAuth('admin');
+    if (!user) return;
+    document.getElementById('admin-name').textContent = user.full_name;
+    document.getElementById('admin-initials').textContent = getInitials(user.full_name);
+    await loadDepts();
+    await loadDoctors();
+}
+
+async function loadDepts() {
+    const res = await apiGet('/departments');
+    if (res.success) {
+        departments = res.data;
+        const deptFilter = document.getElementById('dept-filter');
+        const docDept = document.getElementById('doc-dept');
+        departments.forEach(d => {
+            deptFilter.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+            docDept.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+        });
+    }
+}
+
+async function loadDoctors() {
+    const res = await apiGet('/doctors');
+    allDoctors = res.data || [];
+    renderTable(allDoctors);
+}
+
+function renderTable(docs) {
+    const tbody = document.getElementById('doctors-table');
+    if (!docs.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray-400);padding:40px;">No doctors found</td></tr>'; return; }
+    tbody.innerHTML = docs.map(d => `
+        <tr>
+            <td><div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:13px;overflow:hidden;">
+                    ${d.profile_image ? `<img src="${d.profile_image}" style="width:100%;height:100%;object-fit:cover;">` : getInitials(d.full_name)}
+                </div>
+                <div><div style="font-weight:600;font-size:14px;">${d.full_name}</div><div style="font-size:12px;color:var(--gray-400);">${d.email}</div></div>
+            </div></td>
+            <td style="font-size:13px;">${d.specialization || '—'}</td>
+            <td style="font-size:13px;">${d.department_name || '—'}</td>
+            <td style="font-size:13px;">${d.experience_years} yrs</td>
+            <td style="font-size:13px;font-weight:600;color:var(--primary);">${formatCurrency(d.consultation_fee)}</td>
+            <td><span class="badge ${d.is_active ? 'badge-success' : 'badge-danger'}">${d.is_active ? 'Active' : 'Inactive'}</span></td>
+            <td>
+                <div style="display:flex;gap:6px;">
+                    <button class="action-btn edit" onclick="editDoctor(${d.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                    <button class="action-btn delete" onclick="deleteDoctor(${d.id}, '${d.full_name}')" title="Remove"><i class="fas fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function filterDoctors(q) {
+    const filtered = allDoctors.filter(d => d.full_name.toLowerCase().includes(q.toLowerCase()) || (d.specialization||'').toLowerCase().includes(q.toLowerCase()));
+    renderTable(filtered);
+}
+
+function filterByDept(deptId) {
+    const filtered = deptId ? allDoctors.filter(d => d.department_id == deptId) : allDoctors;
+    renderTable(filtered);
+}
+
+function editDoctor(id) {
+    const d = allDoctors.find(x => x.id == id);
+    if (!d) return;
+    document.getElementById('modal-title').textContent = 'Edit Doctor';
+    document.getElementById('doctor-id').value = d.id;
+    document.getElementById('doc-name').value = d.full_name;
+    document.getElementById('doc-email').value = d.email;
+    document.getElementById('doc-phone').value = d.phone || '';
+    document.getElementById('doc-dept').value = d.department_id || '';
+    document.getElementById('doc-spec').value = d.specialization || '';
+    document.getElementById('doc-qual').value = d.qualification || '';
+    document.getElementById('doc-exp').value = d.experience_years || 0;
+    document.getElementById('doc-fee').value = d.consultation_fee || 0;
+    document.getElementById('doc-days').value = d.available_days || '';
+    document.getElementById('doc-time-start').value = d.available_time_start ? d.available_time_start.substring(0,5) : '09:00';
+    document.getElementById('doc-time-end').value = d.available_time_end ? d.available_time_end.substring(0,5) : '17:00';
+    document.getElementById('doc-bio').value = d.bio || '';
+    openModal('add-doctor-modal');
+}
+
+async function saveDoctor() {
+    const id = document.getElementById('doctor-id').value;
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+    const fd = new FormData();
+    fd.append('full_name', document.getElementById('doc-name').value);
+    fd.append('email', document.getElementById('doc-email').value);
+    fd.append('phone', document.getElementById('doc-phone').value);
+    fd.append('department_id', document.getElementById('doc-dept').value);
+    fd.append('specialization', document.getElementById('doc-spec').value);
+    fd.append('qualification', document.getElementById('doc-qual').value);
+    fd.append('experience_years', document.getElementById('doc-exp').value);
+    fd.append('consultation_fee', document.getElementById('doc-fee').value);
+    fd.append('available_days', document.getElementById('doc-days').value);
+    fd.append('available_time_start', document.getElementById('doc-time-start').value);
+    fd.append('available_time_end', document.getElementById('doc-time-end').value);
+    fd.append('bio', document.getElementById('doc-bio').value);
+    const photo = document.getElementById('doc-photo').files[0];
+    if (photo) fd.append('profile_image', photo);
+
+    const res = id ? await apiPut(`/admin/doctors/${id}`, fd) : await (async () => {
+        const r = await fetch('/api/admin/doctors', { method:'POST', credentials:'include', body:fd });
+        return r.json();
+    })();
+
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save Doctor';
+    if (res.success) {
+        showToast(res.message, 'success');
+        closeModal('add-doctor-modal');
+        document.getElementById('doctor-id').value = '';
+        document.getElementById('modal-title').textContent = 'Add New Doctor';
+        loadDoctors();
+    } else { showToast(res.message, 'error'); }
+}
+
+async function deleteDoctor(id, name) {
+    if (!confirm(`Remove Dr. ${name} from the system?`)) return;
+    const res = await apiDelete(`/admin/doctors/${id}`);
+    if (res.success) { showToast(res.message, 'success'); loadDoctors(); }
+    else showToast(res.message, 'error');
+}
+
+init();
+</script>
+</body>
+</html>

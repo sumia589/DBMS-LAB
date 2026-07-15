@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patients - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+<aside class="sidebar" id="sidebar">
+    <a href="/" class="sidebar-brand"><div class="brand-icon"><i class="fas fa-plus"></i></div><div><h2>MediCare</h2><p>Admin Panel</p></div></a>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Main</div>
+        <a href="/admin/dashboard.html" class="sidebar-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <div class="nav-section-title">Management</div>
+        <a href="/admin/doctors.html" class="sidebar-link"><i class="fas fa-user-md"></i> Doctors</a>
+        <a href="/admin/patients.html" class="sidebar-link active"><i class="fas fa-users"></i> Patients</a>
+        <a href="/admin/appointments.html" class="sidebar-link"><i class="fas fa-calendar-check"></i> Appointments</a>
+        <a href="/admin/departments.html" class="sidebar-link"><i class="fas fa-hospital"></i> Departments</a>
+        <a href="/admin/services.html" class="sidebar-link"><i class="fas fa-stethoscope"></i> Services</a>
+        <a href="/admin/records.html" class="sidebar-link"><i class="fas fa-file-medical"></i> Medical Records</a>
+        <div class="nav-section-title">Content</div>
+        <a href="/admin/news.html" class="sidebar-link"><i class="fas fa-newspaper"></i> News & Events</a>
+        <a href="/admin/testimonials.html" class="sidebar-link"><i class="fas fa-star"></i> Testimonials</a>
+        <a href="/admin/messages.html" class="sidebar-link"><i class="fas fa-envelope"></i> Messages</a>
+        <div class="nav-section-title">Settings</div>
+        <a href="/admin/settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Hospital Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="admin-user"><div class="admin-avatar" id="admin-initials">A</div><div class="admin-user-info"><div class="name" id="admin-name">Admin</div><div class="role">Administrator</div></div></div>
+        <button onclick="logout()" class="sidebar-link" style="width:100%;border:none;cursor:pointer;background:rgba(255,0,0,.1);color:#f87171;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+</aside>
+<div class="main-content">
+    <div class="topbar">
+        <div style="display:flex;align-items:center;gap:14px;">
+            <button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+            <div class="topbar-left"><h1>Patients</h1><p>Manage registered patients</p></div>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="filters-bar">
+            <div class="search-input"><i class="fas fa-search"></i><input type="text" placeholder="Search patients..." oninput="search(this.value)"></div>
+        </div>
+        <div class="data-card">
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Patient</th><th>Phone</th><th>Gender</th><th>DOB</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="patients-table"><tr><td colspan="7" class="text-center"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="/js/main.js"></script>
+<script>
+let allPatients = [];
+async function init() {
+    const user = await checkAuth('admin');
+    if (!user) return;
+    document.getElementById('admin-name').textContent = user.full_name;
+    document.getElementById('admin-initials').textContent = getInitials(user.full_name);
+    await load();
+}
+async function load() {
+    const res = await apiGet('/admin/patients');
+    allPatients = res.data || [];
+    render(allPatients);
+}
+function render(patients) {
+    const tbody = document.getElementById('patients-table');
+    if (!patients.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray-400);padding:40px;">No patients found</td></tr>'; return; }
+    tbody.innerHTML = patients.map(p => `<tr>
+        <td><div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:13px;">${getInitials(p.full_name)}</div>
+            <div><div style="font-weight:600;font-size:14px;">${p.full_name}</div><div style="font-size:12px;color:var(--gray-400);">${p.email}</div></div>
+        </div></td>
+        <td style="font-size:13px;">${p.phone || '—'}</td>
+        <td style="font-size:13px;">${p.gender || '—'}</td>
+        <td style="font-size:13px;">${p.date_of_birth ? formatDate(p.date_of_birth) : '—'}</td>
+        <td style="font-size:13px;">${formatDate(p.created_at)}</td>
+        <td><span class="badge ${p.is_active ? 'badge-success' : 'badge-danger'}">${p.is_active ? 'Active' : 'Inactive'}</span></td>
+        <td><div style="display:flex;gap:6px;">
+            <button class="action-btn ${p.is_active ? 'delete' : 'approve'}" onclick="toggle(${p.id}, '${p.full_name}', ${p.is_active})" title="${p.is_active ? 'Deactivate' : 'Activate'}"><i class="fas fa-${p.is_active ? 'ban' : 'check'}"></i></button>
+        </div></td>
+    </tr>`).join('');
+}
+function search(q) { render(allPatients.filter(p => p.full_name.toLowerCase().includes(q.toLowerCase()) || p.email.toLowerCase().includes(q.toLowerCase()))); }
+async function toggle(id, name, active) {
+    if (!confirm(`${active ? 'Deactivate' : 'Activate'} ${name}?`)) return;
+    const res = await apiPut(`/admin/patients/${id}/toggle`, {});
+    if (res.success) { showToast(res.message, 'success'); load(); } else showToast(res.message, 'error');
+}
+init();
+</script>
+</body>
+</html>

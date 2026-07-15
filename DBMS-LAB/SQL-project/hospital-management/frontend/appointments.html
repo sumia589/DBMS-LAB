@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - MediCare Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .booking-wrapper { max-width: 900px; margin: 0 auto; }
+        .steps-bar { display: flex; justify-content: center; gap: 8px; margin-bottom: 40px; }
+        .step { display: flex; align-items: center; gap: 10px; }
+        .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--gray-200); color: var(--gray-500); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; transition: var(--transition); }
+        .step.active .step-circle { background: var(--primary); color: white; }
+        .step.done .step-circle { background: var(--success); color: white; }
+        .step-label { font-size: 13px; font-weight: 600; color: var(--gray-400); }
+        .step.active .step-label { color: var(--primary); }
+        .step-line { width: 40px; height: 2px; background: var(--gray-200); }
+        .booking-card { background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: 40px; }
+        .doctor-select-card { border: 2px solid var(--gray-200); border-radius: 14px; padding: 20px; cursor: pointer; transition: var(--transition); display: flex; gap: 16px; align-items: center; margin-bottom: 12px; }
+        .doctor-select-card:hover { border-color: var(--secondary); }
+        .doctor-select-card.selected { border-color: var(--primary); background: var(--light); }
+        .doctor-select-avatar { width: 56px; height: 56px; min-width: 56px; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; overflow: hidden; }
+        .doctor-select-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .slot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; margin-top: 16px; }
+        .slot-btn { padding: 10px; border-radius: 8px; border: 2px solid var(--gray-200); background: white; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); color: var(--gray-600); }
+        .slot-btn:hover:not(:disabled) { border-color: var(--primary); }
+        .slot-btn.selected { background: var(--primary); color: white; border-color: var(--primary); }
+        .slot-btn:disabled { background: var(--gray-100); color: var(--gray-300); cursor: not-allowed; text-decoration: line-through; }
+        .summary-box { background: var(--light); border-radius: 14px; padding: 24px; margin-top: 24px; }
+        .summary-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+        .summary-row strong { color: var(--dark); }
+    </style>
+</head>
+<body>
+<nav class="navbar"><div class="navbar-inner">
+    <a href="/" class="navbar-brand"><div class="brand-icon"><i class="fas fa-plus"></i></div>MediCare<span class="brand-plus"> Hospital</span></a>
+    <ul class="nav-links"><li><a href="/">Home</a></li><li><a href="/about.html">About</a></li><li><a href="/doctors.html">Doctors</a></li><li><a href="/services.html">Services</a></li><li><a href="/appointments.html" class="active">Appointments</a></li><li><a href="/news.html">News</a></li><li><a href="/contact.html">Contact</a></li></ul>
+    <div class="nav-actions"></div>
+    <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></div>
+</div></nav>
+
+<div class="page-header">
+    <div class="container"><h1>Book an Appointment</h1><p>Schedule your visit with our specialist doctors in 3 easy steps</p><div class="breadcrumb"><a href="/">Home</a><span>/</span>Appointments</div></div>
+</div>
+
+<section>
+    <div class="container">
+        <div class="booking-wrapper">
+            <div class="steps-bar">
+                <div class="step active" id="step-indicator-1"><div class="step-circle">1</div><span class="step-label">Doctor</span></div>
+                <div class="step-line"></div>
+                <div class="step active" id="step-indicator-2"><div class="step-circle">2</div><span class="step-label">Date & Time</span></div>
+                <div class="step-line"></div>
+                <div class="step active" id="step-indicator-3"><div class="step-circle">3</div><span class="step-label">Confirm</span></div>
+            </div>
+
+            <div class="booking-card">
+                <!-- Not logged in notice -->
+                <div id="login-notice" class="alert alert-info" style="display:none;">
+                    <i class="fas fa-info-circle"></i> Please <a href="/login.html" style="font-weight:700;">login</a> or <a href="/register.html" style="font-weight:700;">register</a> first to book an appointment.
+                </div>
+
+                <div id="booking-form">
+                    <!-- Step 1: Choose Doctor -->
+                    <div>
+                        <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;"><i class="fas fa-user-md" style="color:var(--primary);margin-right:8px;"></i>Select a Doctor</h3>
+                        <select id="dept-filter" class="form-control" style="margin-bottom:16px;max-width:300px;" onchange="filterDocs(this.value)"><option value="">All Departments</option></select>
+                        <div id="doctor-list" style="max-height:320px;overflow-y:auto;"><div class="loading"><div class="spinner"></div></div></div>
+                    </div>
+
+                    <hr style="border:none;border-top:1px solid var(--gray-100);margin:30px 0;">
+
+                    <!-- Step 2: Date & Time -->
+                    <div>
+                        <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;"><i class="fas fa-calendar-alt" style="color:var(--primary);margin-right:8px;"></i>Select Date & Time</h3>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Appointment Date</label><input type="date" id="appt-date" class="form-control" onchange="loadSlots()"></div>
+                            <div class="form-group"><label class="form-label">Visit Type</label>
+                                <select id="appt-type" class="form-control">
+                                    <option value="consultation">Consultation</option>
+                                    <option value="follow-up">Follow-up</option>
+                                    <option value="emergency">Emergency</option>
+                                </select>
+                            </div>
+                        </div>
+                        <label class="form-label">Available Time Slots</label>
+                        <div class="slot-grid" id="slot-grid"><p style="color:var(--gray-400);font-size:13px;">Select a doctor and date to see available slots.</p></div>
+                    </div>
+
+                    <hr style="border:none;border-top:1px solid var(--gray-100);margin:30px 0;">
+
+                    <!-- Step 3: Confirm -->
+                    <div>
+                        <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;"><i class="fas fa-clipboard-list" style="color:var(--primary);margin-right:8px;"></i>Additional Details</h3>
+                        <div class="form-group"><label class="form-label">Symptoms / Reason for Visit</label><textarea id="appt-symptoms" class="form-control" placeholder="Briefly describe your symptoms or reason for the visit..."></textarea></div>
+
+                        <div class="summary-box" id="summary-box" style="display:none;">
+                            <h4 style="font-size:14px;font-weight:700;margin-bottom:12px;">Appointment Summary</h4>
+                            <div class="summary-row"><span>Doctor</span><strong id="sum-doctor">-</strong></div>
+                            <div class="summary-row"><span>Department</span><strong id="sum-dept">-</strong></div>
+                            <div class="summary-row"><span>Date</span><strong id="sum-date">-</strong></div>
+                            <div class="summary-row"><span>Time</span><strong id="sum-time">-</strong></div>
+                            <div class="summary-row"><span>Consultation Fee</span><strong id="sum-fee" style="color:var(--primary);">-</strong></div>
+                        </div>
+
+                        <div class="alert alert-danger" id="booking-error" style="display:none;"></div>
+
+                        <button class="btn btn-primary btn-lg" style="width:100%;margin-top:20px;" onclick="bookAppointment()" id="book-btn">
+                            <i class="fas fa-check-circle"></i> Confirm Appointment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-bottom" style="border:none;padding:30px 0;"><p>&copy; 2024 MediCare General Hospital. All Rights Reserved.</p></div></div></footer>
+
+<script src="/js/main.js"></script>
+<script>
+let allDoctors = [], selectedDoctor = null, selectedSlot = null, isLoggedIn = false;
+
+async function init() {
+    const authRes = await apiGet('/auth/me');
+    isLoggedIn = authRes.success;
+    if (!isLoggedIn) {
+        document.getElementById('login-notice').style.display = 'flex';
+        document.getElementById('book-btn').disabled = true;
+    } else if (authRes.user.role === 'admin') {
+        document.getElementById('booking-form').innerHTML = '<p style="text-align:center;color:var(--gray-400);padding:40px;">Admin accounts cannot book appointments. Please use a patient account.</p>';
+        return;
+    }
+
+    const dr = await apiGet('/departments');
+    const deptFilter = document.getElementById('dept-filter');
+    (dr.data || []).forEach(d => deptFilter.innerHTML += `<option value="${d.id}">${d.name}</option>`);
+
+    const res = await apiGet('/doctors');
+    allDoctors = res.data || [];
+    renderDoctors(allDoctors);
+
+    // Pre-select from URL
+    const params = new URLSearchParams(window.location.search);
+    const docId = params.get('doctor');
+    if (docId) setTimeout(() => selectDoctor(parseInt(docId)), 300);
+
+    // Min date = today
+    document.getElementById('appt-date').min = new Date().toISOString().split('T')[0];
+}
+
+function renderDoctors(docs) {
+    const el = document.getElementById('doctor-list');
+    el.innerHTML = docs.length ? docs.map(d => `
+        <div class="doctor-select-card" id="doc-card-${d.id}" onclick="selectDoctor(${d.id})">
+            <div class="doctor-select-avatar">${d.profile_image ? `<img src="${d.profile_image}">` : `<i class="fas fa-user-md"></i>`}</div>
+            <div style="flex:1;">
+                <div style="font-weight:700;font-size:15px;">${d.full_name}</div>
+                <div style="font-size:13px;color:var(--primary);">${d.specialization}</div>
+                <div style="font-size:12px;color:var(--gray-400);">${d.department_name || ''} &bull; ${d.experience_years} yrs exp</div>
+            </div>
+            <div style="font-weight:700;color:var(--primary);font-size:15px;">${formatCurrency(d.consultation_fee)}</div>
+        </div>
+    `).join('') : '<p style="color:var(--gray-400);">No doctors found.</p>';
+}
+
+function filterDocs(deptId) {
+    renderDoctors(deptId ? allDoctors.filter(d => d.department_id == deptId) : allDoctors);
+}
+
+function selectDoctor(id) {
+    selectedDoctor = allDoctors.find(d => d.id === id);
+    if (!selectedDoctor) return;
+    document.querySelectorAll('.doctor-select-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById(`doc-card-${id}`)?.classList.add('selected');
+    loadSlots();
+    updateSummary();
+}
+
+async function loadSlots() {
+    if (!selectedDoctor) return;
+    const date = document.getElementById('appt-date').value;
+    if (!date) return;
+    const res = await apiGet(`/appointments/slots?doctor_id=${selectedDoctor.id}&date=${date}`);
+    const grid = document.getElementById('slot-grid');
+    const slots = res.data || [];
+    grid.innerHTML = slots.length ? slots.map(s => `
+        <button class="slot-btn" ${!s.available ? 'disabled' : ''} onclick="selectSlot('${s.time}', this)">${formatTime(s.time)}</button>
+    `).join('') : '<p style="color:var(--gray-400);font-size:13px;">No slots available for this date.</p>';
+    selectedSlot = null;
+}
+
+function selectSlot(time, btn) {
+    selectedSlot = time;
+    document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    updateSummary();
+}
+
+function updateSummary() {
+    if (selectedDoctor && selectedSlot && document.getElementById('appt-date').value) {
+        document.getElementById('summary-box').style.display = 'block';
+        document.getElementById('sum-doctor').textContent = selectedDoctor.full_name;
+        document.getElementById('sum-dept').textContent = selectedDoctor.department_name || 'General';
+        document.getElementById('sum-date').textContent = formatDate(document.getElementById('appt-date').value);
+        document.getElementById('sum-time').textContent = formatTime(selectedSlot);
+        document.getElementById('sum-fee').textContent = formatCurrency(selectedDoctor.consultation_fee);
+    }
+}
+
+async function bookAppointment() {
+    const errDiv = document.getElementById('booking-error');
+    errDiv.style.display = 'none';
+
+    if (!isLoggedIn) { window.location.href = '/login.html'; return; }
+    if (!selectedDoctor) { errDiv.style.display='flex'; errDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please select a doctor'; return; }
+    const date = document.getElementById('appt-date').value;
+    if (!date) { errDiv.style.display='flex'; errDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please select a date'; return; }
+    if (!selectedSlot) { errDiv.style.display='flex'; errDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please select a time slot'; return; }
+
+    const btn = document.getElementById('book-btn');
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
+
+    const res = await apiPost('/appointments', {
+        doctor_id: selectedDoctor.id,
+        appointment_date: date,
+        appointment_time: selectedSlot,
+        type: document.getElementById('appt-type').value,
+        symptoms: document.getElementById('appt-symptoms').value
+    });
+
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Appointment';
+
+    if (res.success) {
+        showToast(res.message, 'success');
+        setTimeout(() => window.location.href = '/patient/appointments.html', 1200);
+    } else {
+        errDiv.style.display = 'flex';
+        errDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${res.message}`;
+    }
+}
+
+init();
+</script>
+</body>
+</html>

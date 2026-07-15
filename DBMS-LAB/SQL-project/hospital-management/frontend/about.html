@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - MediCare Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .about-visual { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: var(--radius-lg); padding: 50px; color: white; text-align: center; }
+        .about-visual i { font-size: 80px; margin-bottom: 20px; opacity: .9; }
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gray-200); }
+        .timeline-item { position: relative; padding-bottom: 32px; }
+        .timeline-item::before { content: ''; position: absolute; left: -34px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--primary); border: 3px solid white; box-shadow: 0 0 0 2px var(--primary); }
+        .timeline-item h4 { font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+        .timeline-item p { font-size: 14px; color: var(--gray-500); }
+        .value-card { background: white; border-radius: 16px; padding: 28px; box-shadow: var(--shadow); text-align: center; }
+        .value-icon { width: 56px; height: 56px; background: var(--light); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 22px; color: var(--primary); }
+    </style>
+</head>
+<body>
+<nav class="navbar"><div class="navbar-inner">
+    <a href="/" class="navbar-brand"><div class="brand-icon"><i class="fas fa-plus"></i></div>MediCare<span class="brand-plus"> Hospital</span></a>
+    <ul class="nav-links"><li><a href="/">Home</a></li><li><a href="/about.html" class="active">About</a></li><li><a href="/doctors.html">Doctors</a></li><li><a href="/services.html">Services</a></li><li><a href="/appointments.html">Appointments</a></li><li><a href="/news.html">News</a></li><li><a href="/contact.html">Contact</a></li></ul>
+    <div class="nav-actions"></div>
+    <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></div>
+</div></nav>
+
+<div class="page-header">
+    <div class="container"><h1>About MediCare Hospital</h1><p>Compassionate care, advanced medicine, since 1985</p><div class="breadcrumb"><a href="/">Home</a><span>/</span>About</div></div>
+</div>
+
+<section>
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-visual">
+                <i class="fas fa-hospital-alt"></i>
+                <h3 style="font-size:24px;margin-bottom:10px;">40+ Years of Excellence</h3>
+                <p style="opacity:.85;">Serving our community with dedication, expertise, and compassion since 1985.</p>
+            </div>
+            <div>
+                <p class="section-eyebrow">Who We Are</p>
+                <h2 class="section-title" style="font-size:32px;">Dedicated to Your Wellbeing</h2>
+                <p style="color:var(--gray-600);line-height:1.8;margin-bottom:16px;">MediCare General Hospital has been a cornerstone of healthcare excellence for over four decades. We combine cutting-edge medical technology with a compassionate, patient-first approach to deliver outstanding care across all specialties.</p>
+                <p style="color:var(--gray-600);line-height:1.8;margin-bottom:24px;">From routine checkups to complex surgeries, our team of 150+ specialist doctors and dedicated staff work around the clock to ensure every patient receives the best possible treatment in a safe, comfortable environment.</p>
+                <div style="display:flex;gap:24px;">
+                    <div><div style="font-size:28px;font-weight:700;color:var(--primary);">500+</div><div style="font-size:13px;color:var(--gray-500);">Hospital Beds</div></div>
+                    <div><div style="font-size:28px;font-weight:700;color:var(--primary);">150+</div><div style="font-size:13px;color:var(--gray-500);">Specialist Doctors</div></div>
+                    <div><div style="font-size:28px;font-weight:700;color:var(--primary);">100K+</div><div style="font-size:13px;color:var(--gray-500);">Patients Served</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-light">
+    <div class="container text-center">
+        <p class="section-eyebrow">Our Core Values</p>
+        <h2 class="section-title">What Drives Us</h2>
+        <p class="section-subtitle">Our values shape everything we do, from patient interactions to medical innovation.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px;">
+            <div class="value-card"><div class="value-icon"><i class="fas fa-heart"></i></div><h3 style="font-size:16px;margin-bottom:8px;">Compassion</h3><p style="font-size:13px;color:var(--gray-500);">Treating every patient with empathy, dignity, and respect.</p></div>
+            <div class="value-card"><div class="value-icon"><i class="fas fa-award"></i></div><h3 style="font-size:16px;margin-bottom:8px;">Excellence</h3><p style="font-size:13px;color:var(--gray-500);">Pursuing the highest standards in medical care and service.</p></div>
+            <div class="value-card"><div class="value-icon"><i class="fas fa-handshake"></i></div><h3 style="font-size:16px;margin-bottom:8px;">Integrity</h3><p style="font-size:13px;color:var(--gray-500);">Honest, transparent, and ethical in everything we do.</p></div>
+            <div class="value-card"><div class="value-icon"><i class="fas fa-lightbulb"></i></div><h3 style="font-size:16px;margin-bottom:8px;">Innovation</h3><p style="font-size:13px;color:var(--gray-500);">Embracing new technology to improve patient outcomes.</p></div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <div style="max-width:700px;margin:0 auto;">
+            <p class="section-eyebrow text-center">Our Journey</p>
+            <h2 class="section-title text-center">History & Milestones</h2>
+            <div class="timeline" style="margin-top:40px;">
+                <div class="timeline-item"><h4>1985 — Foundation</h4><p>MediCare Hospital opens its doors with 50 beds and a vision for accessible healthcare.</p></div>
+                <div class="timeline-item"><h4>1998 — Expansion</h4><p>Hospital expands to 200 beds and introduces specialized cardiology and neurology departments.</p></div>
+                <div class="timeline-item"><h4>2010 — Modernization</h4><p>State-of-the-art diagnostic equipment and digital health records introduced.</p></div>
+                <div class="timeline-item"><h4>2024 — Today</h4><p>Now serving 100,000+ patients annually with 500 beds and 150+ specialist doctors.</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-bottom" style="border:none;padding:30px 0;"><p>&copy; 2024 MediCare General Hospital. All Rights Reserved.</p></div></div></footer>
+
+<script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Doctors - MediCare Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>.filters-bar-public{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:36px;justify-content:center;}.filters-bar-public .search-input{display:flex;align-items:center;background:white;border:1px solid var(--gray-200);border-radius:50px;padding:0 18px;gap:8px;min-width:260px;}.filters-bar-public .search-input input{border:none;outline:none;padding:12px 0;font-size:14px;width:100%;font-family:inherit;}.filters-bar-public select{padding:12px 18px;border-radius:50px;border:1px solid var(--gray-200);font-size:14px;font-family:inherit;cursor:pointer;}</style>
+</head>
+<body>
+<nav class="navbar"><div class="navbar-inner">
+    <a href="/" class="navbar-brand"><div class="brand-icon"><i class="fas fa-plus"></i></div>MediCare<span class="brand-plus"> Hospital</span></a>
+    <ul class="nav-links"><li><a href="/">Home</a></li><li><a href="/about.html">About</a></li><li><a href="/doctors.html" class="active">Doctors</a></li><li><a href="/services.html">Services</a></li><li><a href="/appointments.html">Appointments</a></li><li><a href="/news.html">News</a></li><li><a href="/contact.html">Contact</a></li></ul>
+    <div class="nav-actions"></div>
+    <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></div>
+</div></nav>
+
+<div class="page-header">
+    <div class="container">
+        <h1>Our Expert Doctors</h1>
+        <p>Meet our team of highly qualified medical professionals</p>
+        <div class="breadcrumb"><a href="/">Home</a><span>/</span>Doctors</div>
+    </div>
+</div>
+
+<section>
+    <div class="container">
+        <div class="filters-bar-public">
+            <div class="search-input"><i class="fas fa-search"></i><input type="text" placeholder="Search doctor name or specialty..." id="search-input" oninput="search(this.value)"></div>
+            <select id="dept-filter" onchange="filterDept(this.value)"><option value="">All Departments</option></select>
+        </div>
+        <div class="doctors-grid" id="doctors-grid"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container"><div class="footer-bottom" style="border:none;padding:30px 0;"><p>&copy; 2024 MediCare General Hospital. All Rights Reserved.</p></div></div>
+</footer>
+
+<script src="/js/main.js"></script>
+<script>
+let allDoctors = [];
+async function init() {
+    const params = new URLSearchParams(window.location.search);
+    const deptParam = params.get('dept');
+
+    const dr = await apiGet('/departments');
+    const deptFilter = document.getElementById('dept-filter');
+    (dr.data || []).forEach(d => deptFilter.innerHTML += `<option value="${d.id}">${d.name}</option>`);
+    if (deptParam) deptFilter.value = deptParam;
+
+    const res = await apiGet('/doctors' + (deptParam ? `?department=${deptParam}` : ''));
+    allDoctors = res.data || [];
+    render(allDoctors);
+}
+function render(docs) {
+    const grid = document.getElementById('doctors-grid');
+    grid.innerHTML = docs.length ? docs.map(d => `
+        <div class="doctor-card">
+            <div class="doctor-image">${d.profile_image ? `<img src="${d.profile_image}" alt="${d.full_name}">` : `<i class="fas fa-user-md placeholder-icon"></i>`}<span class="doctor-badge">Available</span></div>
+            <div class="doctor-info">
+                <h3>${d.full_name}</h3>
+                <div class="specialty">${d.specialization || ''}</div>
+                <span class="dept-tag">${d.department_name || 'General'}</span>
+                <div class="doctor-meta"><span><i class="fas fa-graduation-cap"></i> ${d.qualification || ''}</span><span><i class="fas fa-briefcase"></i> ${d.experience_years} yrs</span></div>
+                <div class="doctor-footer"><div class="doc-fee">${formatCurrency(d.consultation_fee)} <span>/ visit</span></div><a href="/appointments.html?doctor=${d.id}" class="btn btn-primary btn-sm">Book</a></div>
+            </div>
+        </div>
+    `).join('') : '<p style="text-align:center;color:var(--gray-400);grid-column:1/-1;padding:60px;">No doctors found matching your search.</p>';
+}
+function search(q) {
+    render(allDoctors.filter(d => d.full_name.toLowerCase().includes(q.toLowerCase()) || (d.specialization||'').toLowerCase().includes(q.toLowerCase())));
+}
+function filterDept(id) {
+    render(id ? allDoctors.filter(d => d.department_id == id) : allDoctors);
+}
+init();
+</script>
+</body>
+</html>
